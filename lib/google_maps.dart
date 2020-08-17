@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,6 +19,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
   Map clusterData;
   Set<Circle> markers = Set<Circle>();
   double defaultZoom = 15;
+  double fontSize = 20;
+  double iconSize = 40;
+  double edgeSize = 10;
+  double opacity = 0.5;
   Future currentLocation;
   LatLng coordinates;
   GoogleMapController mapController;
@@ -61,38 +67,66 @@ class _GoogleMapsState extends State<GoogleMaps> {
     });
   }
 
-  Future showMarkers(LatLng coordinates, BuildContext context) async {
+  Future showInfo(BuildContext context, LatLng coordinates) async {
     getClusterData(coordinates).then((value) {
-      value['geo'].forEach((location) {
-        markers.add(
-          Circle(
-            circleId: CircleId('${location[2]}${location[3]}'),
-            center: LatLng(location[2], location[3]),
-            radius: 30,
-            strokeWidth: 2,
-            strokeColor: Colors.red,
-            consumeTapEvents: true,
-            onTap: () {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) => Container(
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('Momento do Roubo',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold)),
-                            Text('Data: ${location[0]}',
-                                style: TextStyle(fontSize: 20)),
-                            Text('Horário: ${location[1]}',
-                                style: TextStyle(fontSize: 20))
-                          ],
-                        ),
-                      ));
-            },
+      if (value['hotspot'] == true) {
+        final snackBar = SnackBar(
+          padding: EdgeInsets.all(edgeSize),
+          content: Row(
+            children: [
+              Icon(
+                Icons.warning,
+                size: iconSize,
+              ),
+              Flexible(
+                  child: Text(
+                'Previsão de alto índice de crime no local para este mês',
+                style: TextStyle(fontSize: fontSize),
+                textAlign: TextAlign.center,
+              ))
+            ],
           ),
+          backgroundColor: Colors.red,
+          duration: Duration(days: 30),
         );
+        Scaffold.of(context).showSnackBar(snackBar);
+      } else {
+        Scaffold.of(context).hideCurrentSnackBar();
+      }
+      setState(() {
+        value['geo'].forEach((location) {
+          markers.add(
+            Circle(
+              circleId: CircleId('${location[2]}${location[3]}'),
+              center: LatLng(location[2], location[3]),
+              radius: 30,
+              strokeWidth: 2,
+              strokeColor: Colors.red,
+              fillColor: Colors.redAccent.withOpacity(opacity),
+              consumeTapEvents: true,
+              onTap: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) => Container(
+                          padding: EdgeInsets.all(edgeSize),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('Momento do Roubo',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                              Text('Data: ${location[0]}',
+                                  style: TextStyle(fontSize: fontSize)),
+                              Text('Horário: ${location[1]}',
+                                  style: TextStyle(fontSize: fontSize))
+                            ],
+                          ),
+                        ));
+              },
+            ),
+          );
+        });
       });
     });
   }
@@ -131,14 +165,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
                   }
                 },
                 onCameraMove: (position) => coordinates = position.target,
-                onCameraIdle: () {
-                  setState(() {
-                    showMarkers(coordinates, context);
-                  });
-                },
+                onCameraIdle: () => showInfo(context, coordinates),
                 circles: markers),
             Align(
-                child: Icon(Icons.place, size: 40, color: Colors.red),
+                child: Icon(Icons.place, size: iconSize, color: Colors.blue),
                 alignment: Alignment.center),
           ]);
         },
