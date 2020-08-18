@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:async';
@@ -126,7 +125,9 @@ class _GoogleMapsState extends State<GoogleMaps> {
   SnackBar _snackBar(bool isHotspot, bool isNear) {
     return SnackBar(
       padding: EdgeInsets.all(edgeSize),
-      content: Row(
+      duration: Duration(days: 30),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             Icons.warning,
@@ -138,16 +139,15 @@ class _GoogleMapsState extends State<GoogleMaps> {
           Flexible(
               child: Text(
             (isHotspot == true && isNear == true)
-                ? 'Área de risco e próximo ao um local de crime'
+                ? 'Área de risco e próximo a um local de crime'
                 : (isHotspot == true)
-                    ? 'Está em uma área de risco'
-                    : 'Está próximo a um local de crime',
+                    ? 'Área de risco'
+                    : 'Próximo a um local de crime',
             style: TextStyle(fontSize: fontSize),
             textAlign: TextAlign.center,
           ))
         ],
       ),
-      duration: Duration(days: 30),
     );
   }
 
