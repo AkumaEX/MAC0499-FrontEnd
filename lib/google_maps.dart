@@ -35,13 +35,6 @@ class _GoogleMapsState extends State<GoogleMaps> {
     return LatLng(position.latitude, position.longitude);
   }
 
-  Future<Map> getClusterData(LatLng location) async {
-    var url =
-        '$domain?latitude=${location.latitude}&longitude=${location.longitude}';
-    http.Response response = await http.get(url);
-    return json.decode(response.body);
-  }
-
   StreamSubscription<Position> startTracking() {
     if (positionStream != null) {
       positionStream.cancel();
@@ -57,76 +50,18 @@ class _GoogleMapsState extends State<GoogleMaps> {
   }
 
   Future showInfo(BuildContext context, LatLng coordinates) async {
-    getClusterData(coordinates).then((value) {
+    _getClusterData(coordinates).then((value) {
       setState(() {
-        value['geo'].forEach((location) {
-          circles.add(
-            Circle(
-              circleId: CircleId('${location[2]}${location[3]}'),
-              center: LatLng(location[2], location[3]),
-              radius: circleRadius,
-              strokeWidth: 2,
-              strokeColor: Colors.red,
-              fillColor: Colors.redAccent.withOpacity(opacity),
-              consumeTapEvents: true,
-              onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return Dialog(
-                        child: Padding(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Informações do Roubo',
-                                  style: TextStyle(
-                                      fontSize: fontSize,
-                                      fontWeight: FontWeight.bold)),
-                              Text('Data: ${location[0]}',
-                                  style: TextStyle(fontSize: fontSize)),
-                              Text('Horário: ${location[1]}',
-                                  style: TextStyle(fontSize: fontSize))
-                            ],
-                          ),
-                          padding: EdgeInsets.all(edgeSize),
-                        ),
-                      );
-                    });
-              },
-            ),
-          );
+        value['geo'].forEach((info) {
+          circles.add(_circle(info[0], info[1], info[2], info[3]));
         });
       });
 
-      checkDistance(coordinates, circles).then((isNear) {
+      _checkDistance(coordinates, circles).then((isNear) {
         if (value['hotspot'] == true || isNear == true) {
-          final snackBar = SnackBar(
-            padding: EdgeInsets.all(edgeSize),
-            content: Row(
-              children: [
-                Icon(
-                  Icons.warning,
-                  size: iconSize,
-                  color: (value['hotspot'] == true && isNear == true)
-                      ? Colors.red
-                      : Colors.yellow,
-                ),
-                Flexible(
-                    child: Text(
-                  (value['hotspot'] == true && isNear == true)
-                      ? 'Área de risco e próximo ao um local de crime'
-                      : (value['hotspot'] == true)
-                          ? 'Está em uma área de risco'
-                          : 'Está próximo a um local de crime',
-                  style: TextStyle(fontSize: fontSize),
-                  textAlign: TextAlign.center,
-                ))
-              ],
-            ),
-            duration: Duration(days: 30),
-          );
           Scaffold.of(context).hideCurrentSnackBar();
-          Scaffold.of(context).showSnackBar(snackBar);
+          Scaffold.of(context)
+              .showSnackBar(_snackBar(value['hotspot'], isNear));
         } else {
           Scaffold.of(context).hideCurrentSnackBar();
         }
@@ -134,7 +69,47 @@ class _GoogleMapsState extends State<GoogleMaps> {
     });
   }
 
-  Future<bool> checkDistance(LatLng coordinates, Set<Circle> circles) async {
+  Future<Map> _getClusterData(LatLng location) async {
+    var url =
+        '$domain?latitude=${location.latitude}&longitude=${location.longitude}';
+    http.Response response = await http.get(url);
+    return json.decode(response.body);
+  }
+
+  Circle _circle(String date, String time, double latitude, double longitude) {
+    return Circle(
+      circleId: CircleId('$latitude$longitude'),
+      center: LatLng(latitude, longitude),
+      radius: circleRadius,
+      strokeWidth: 2,
+      strokeColor: Colors.red,
+      fillColor: Colors.redAccent.withOpacity(opacity),
+      consumeTapEvents: true,
+      onTap: () {
+        showDialog(context: context, child: _showDialog(date, time));
+      },
+    );
+  }
+
+  Dialog _showDialog(String date, String time) {
+    return Dialog(
+      child: Padding(
+        padding: EdgeInsets.all(edgeSize),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Informações do Roubo',
+                style:
+                    TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
+            Text('Data: $date', style: TextStyle(fontSize: fontSize)),
+            Text('Horário: $time', style: TextStyle(fontSize: fontSize))
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _checkDistance(LatLng coordinates, Set<Circle> circles) async {
     for (Circle circle in circles) {
       double distance = await Geolocator().distanceBetween(
           coordinates.latitude,
@@ -146,6 +121,34 @@ class _GoogleMapsState extends State<GoogleMaps> {
       }
     }
     return false;
+  }
+
+  SnackBar _snackBar(bool isHotspot, bool isNear) {
+    return SnackBar(
+      padding: EdgeInsets.all(edgeSize),
+      content: Row(
+        children: [
+          Icon(
+            Icons.warning,
+            size: iconSize,
+            color: (isHotspot == true && isNear == true)
+                ? Colors.red
+                : Colors.yellow,
+          ),
+          Flexible(
+              child: Text(
+            (isHotspot == true && isNear == true)
+                ? 'Área de risco e próximo ao um local de crime'
+                : (isHotspot == true)
+                    ? 'Está em uma área de risco'
+                    : 'Está próximo a um local de crime',
+            style: TextStyle(fontSize: fontSize),
+            textAlign: TextAlign.center,
+          ))
+        ],
+      ),
+      duration: Duration(days: 30),
+    );
   }
 
   @override
