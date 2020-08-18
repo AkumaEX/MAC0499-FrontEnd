@@ -14,8 +14,6 @@ class GoogleMaps extends StatefulWidget {
 }
 
 class _GoogleMapsState extends State<GoogleMaps> {
-  Map clusterData;
-  Set<Circle> circles = Set<Circle>();
   double defaultZoom = 15;
   double fontSize = 20;
   double iconSize = 40;
@@ -24,10 +22,12 @@ class _GoogleMapsState extends State<GoogleMaps> {
   double distRadius = 300;
   double circleRadius = 30;
   String domain = 'http://104.155.175.253/ml/api';
+  Set<Circle> circles = Set<Circle>();
   Future<LatLng> location;
+  StreamSubscription<Position> positionStream;
+  Map clusterData;
   LatLng coordinates;
   GoogleMapController mapController;
-  StreamSubscription<Position> positionStream;
 
   Future<LatLng> getLocation() async {
     Position position = await Geolocator().getCurrentPosition(
@@ -70,14 +70,15 @@ class _GoogleMapsState extends State<GoogleMaps> {
               fillColor: Colors.redAccent.withOpacity(opacity),
               consumeTapEvents: true,
               onTap: () {
-                showModalBottomSheet(
+                showDialog(
                     context: context,
-                    builder: (context) => Container(
-                          padding: EdgeInsets.all(edgeSize),
+                    builder: (context) {
+                      return Dialog(
+                        child: Padding(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('Momento do Roubo',
+                              Text('Informações do Roubo',
                                   style: TextStyle(
                                       fontSize: fontSize,
                                       fontWeight: FontWeight.bold)),
@@ -87,7 +88,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
                                   style: TextStyle(fontSize: fontSize))
                             ],
                           ),
-                        ));
+                          padding: EdgeInsets.all(edgeSize),
+                        ),
+                      );
+                    });
               },
             ),
           );
