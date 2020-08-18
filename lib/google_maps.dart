@@ -1,12 +1,11 @@
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMaps extends StatefulWidget {
@@ -15,91 +14,57 @@ class GoogleMaps extends StatefulWidget {
 }
 
 class _GoogleMapsState extends State<GoogleMaps> {
-  Location location = Location();
   Map clusterData;
-  Set<Circle> markers = Set<Circle>();
+  Set<Circle> circles = Set<Circle>();
   double defaultZoom = 15;
   double fontSize = 20;
   double iconSize = 40;
   double edgeSize = 10;
   double opacity = 0.5;
-  Future currentLocation;
+  double distRadius = 300;
+  double circleRadius = 30;
+  String domain = 'http://104.155.175.253/ml/api';
+  Future<LatLng> location;
   LatLng coordinates;
   GoogleMapController mapController;
-  StreamSubscription<LocationData> locationSubscription;
+  StreamSubscription<Position> positionStream;
 
-  Future getLocation() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-    LocationData locationData = await location.getLocation();
-    return LatLng(locationData.latitude, locationData.longitude);
+  Future<LatLng> getLocation() async {
+    Position position = await Geolocator().getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation);
+    return LatLng(position.latitude, position.longitude);
   }
 
-  Future<Map> getClusterData(LatLng currentLocation) async {
+  Future<Map> getClusterData(LatLng location) async {
     var url =
-        'http://104.155.175.253/ml/api?latitude=${currentLocation.latitude}&longitude=${currentLocation.longitude}';
+        '$domain?latitude=${location.latitude}&longitude=${location.longitude}';
     http.Response response = await http.get(url);
     return json.decode(response.body);
   }
 
-  StreamSubscription<LocationData> startTracking() {
-    if (locationSubscription != null) {
-      locationSubscription.cancel();
+  StreamSubscription<Position> startTracking() {
+    if (positionStream != null) {
+      positionStream.cancel();
     }
-    return location.onLocationChanged.listen((locationData) {
-      coordinates = LatLng(locationData.latitude, locationData.longitude);
+    var locationOptions = LocationOptions(
+        accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 10);
+    return Geolocator()
+        .getPositionStream(locationOptions)
+        .listen((Position position) {
+      coordinates = LatLng(position.latitude, position.longitude);
       mapController.moveCamera(CameraUpdate.newLatLng(coordinates));
     });
   }
 
   Future showInfo(BuildContext context, LatLng coordinates) async {
     getClusterData(coordinates).then((value) {
-      if (value['hotspot'] == true) {
-        final snackBar = SnackBar(
-          padding: EdgeInsets.all(edgeSize),
-          content: Row(
-            children: [
-              Icon(
-                Icons.warning,
-                size: iconSize,
-              ),
-              Flexible(
-                  child: Text(
-                'Previsão de alto índice de crime no local para este mês',
-                style: TextStyle(fontSize: fontSize),
-                textAlign: TextAlign.center,
-              ))
-            ],
-          ),
-          backgroundColor: Colors.red,
-          duration: Duration(days: 30),
-        );
-        Scaffold.of(context).showSnackBar(snackBar);
-      } else {
-        Scaffold.of(context).hideCurrentSnackBar();
-      }
       setState(() {
         value['geo'].forEach((location) {
-          markers.add(
+          circles.add(
             Circle(
               circleId: CircleId('${location[2]}${location[3]}'),
               center: LatLng(location[2], location[3]),
-              radius: 30,
+              radius: circleRadius,
               strokeWidth: 2,
               strokeColor: Colors.red,
               fillColor: Colors.redAccent.withOpacity(opacity),
@@ -114,7 +79,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
                             children: [
                               Text('Momento do Roubo',
                                   style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: fontSize,
                                       fontWeight: FontWeight.bold)),
                               Text('Data: ${location[0]}',
                                   style: TextStyle(fontSize: fontSize)),
@@ -128,12 +93,60 @@ class _GoogleMapsState extends State<GoogleMaps> {
           );
         });
       });
+
+      checkDistance(coordinates, circles).then((isNear) {
+        if (value['hotspot'] == true || isNear == true) {
+          final snackBar = SnackBar(
+            padding: EdgeInsets.all(edgeSize),
+            content: Row(
+              children: [
+                Icon(
+                  Icons.warning,
+                  size: iconSize,
+                  color: (value['hotspot'] == true && isNear == true)
+                      ? Colors.red
+                      : Colors.yellow,
+                ),
+                Flexible(
+                    child: Text(
+                  (value['hotspot'] == true && isNear == true)
+                      ? 'Área de risco e próximo ao um local de crime'
+                      : (value['hotspot'] == true)
+                          ? 'Está em uma área de risco'
+                          : 'Está próximo a um local de crime',
+                  style: TextStyle(fontSize: fontSize),
+                  textAlign: TextAlign.center,
+                ))
+              ],
+            ),
+            duration: Duration(days: 30),
+          );
+          Scaffold.of(context).hideCurrentSnackBar();
+          Scaffold.of(context).showSnackBar(snackBar);
+        } else {
+          Scaffold.of(context).hideCurrentSnackBar();
+        }
+      });
     });
+  }
+
+  Future<bool> checkDistance(LatLng coordinates, Set<Circle> circles) async {
+    for (Circle circle in circles) {
+      double distance = await Geolocator().distanceBetween(
+          coordinates.latitude,
+          coordinates.longitude,
+          circle.center.latitude,
+          circle.center.longitude);
+      if (distance < distRadius) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
   void initState() {
-    currentLocation = getLocation();
+    location = getLocation();
     super.initState();
   }
 
@@ -141,7 +154,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: currentLocation,
+        future: location,
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -160,13 +173,13 @@ class _GoogleMapsState extends State<GoogleMaps> {
                     CameraPosition(target: coordinates, zoom: defaultZoom),
                 onMapCreated: (controller) => mapController = controller,
                 onCameraMoveStarted: () {
-                  if (locationSubscription != null) {
-                    locationSubscription.cancel();
+                  if (positionStream != null) {
+                    positionStream.cancel();
                   }
                 },
                 onCameraMove: (position) => coordinates = position.target,
                 onCameraIdle: () => showInfo(context, coordinates),
-                circles: markers),
+                circles: circles),
             Align(
                 child: Icon(Icons.place, size: iconSize, color: Colors.blue),
                 alignment: Alignment.center),
@@ -175,7 +188,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
       ),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.my_location),
-          onPressed: () => locationSubscription = startTracking()),
+          onPressed: () => positionStream = startTracking()),
     );
   }
 }
