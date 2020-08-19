@@ -80,14 +80,24 @@ class _GoogleMapsState extends State<GoogleMaps> {
       circleId: CircleId('$latitude$longitude'),
       center: LatLng(latitude, longitude),
       radius: circleRadius,
-      strokeWidth: 2,
+      strokeWidth: 3,
       strokeColor: Colors.red,
-      fillColor: Colors.redAccent.withOpacity(opacity),
+      fillColor: Colors.black.withOpacity(_getOpacity(time)),
       consumeTapEvents: true,
       onTap: () {
         showDialog(context: context, child: _showDialog(date, time));
       },
     );
+  }
+
+  double _getOpacity(String time) {
+    List hourMinute = time.split(':');
+    DateTime now = DateTime.now();
+    int hour = int.parse(hourMinute[0]);
+    int minute = int.parse(hourMinute[1]);
+    Duration duration = now.difference(
+        DateTime(now.year, now.month, now.day, hour, minute, now.second));
+    return 1 - (duration.inMinutes / 1440).abs();
   }
 
   Dialog _showDialog(String date, String time) {
