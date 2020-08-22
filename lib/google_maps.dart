@@ -76,17 +76,19 @@ class _GoogleMapsState extends State<GoogleMaps> {
               coordinates = snapshot.data;
               child = Stack(key: Key('main'), children: <Widget>[
                 GoogleMap(
-                    initialCameraPosition:
-                        CameraPosition(target: coordinates, zoom: defaultZoom),
-                    onMapCreated: (controller) {
-                      mapController = controller;
-                      positionStream = startTracking();
-                    },
-                    onCameraMoveStarted: () => positionStream.cancel(),
-                    onCameraMove: (position) => coordinates = position.target,
-                    onCameraIdle: () => showInfo(context, coordinates),
-                    circles: circles,
-                    zoomControlsEnabled: false),
+                  initialCameraPosition:
+                      CameraPosition(target: coordinates, zoom: defaultZoom),
+                  onMapCreated: (controller) {
+                    mapController = controller;
+                    positionStream = startTracking();
+                  },
+                  onCameraMoveStarted: () => positionStream.cancel(),
+                  onCameraMove: (position) => coordinates = position.target,
+                  onCameraIdle: () => showInfo(context, coordinates),
+                  circles: circles,
+                  zoomControlsEnabled: false,
+                  rotateGesturesEnabled: false,
+                ),
                 Align(
                   alignment: Alignment.center,
                   child: Icon(Icons.place, size: iconSize, color: Colors.blue),

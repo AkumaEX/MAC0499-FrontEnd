@@ -8,6 +8,7 @@ import 'dart:convert';
 double fontSize = 20;
 double edgeSize = 10;
 double distRadius = 300;
+double circleRadius = 30;
 double iconSize = 40;
 double opacity = 0.5;
 
@@ -26,8 +27,8 @@ Stack showLoadingScreen() {
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text('eRoubo',
-                  style: GoogleFonts.righteous(
-                      fontSize: 100, color: Colors.white)),
+                  style:
+                      GoogleFonts.righteous(fontSize: 80, color: Colors.white)),
             ),
             FittedBox(
               fit: BoxFit.scaleDown,
@@ -72,7 +73,7 @@ Circle newCircle(BuildContext context, String date, String time,
   return Circle(
     circleId: CircleId('$latitude$longitude'),
     center: LatLng(latitude, longitude),
-    radius: 30,
+    radius: circleRadius,
     strokeWidth: 3,
     strokeColor: Colors.red,
     fillColor: Colors.black.withOpacity(_getOpacityFromTime(time)),
@@ -84,16 +85,33 @@ Circle newCircle(BuildContext context, String date, String time,
 }
 
 double _getOpacityFromTime(String time) {
-  return 1 - (getTimeDiffFromNow(time).inMinutes / 1440).abs();
+  return 1 - (getTimeDiffFromNow(time).inMinutes / 720);
 }
 
 Duration getTimeDiffFromNow(time) {
   List hourMinute = time.split(':');
-  DateTime now = DateTime.now();
   int hour = int.parse(hourMinute[0]);
   int minute = int.parse(hourMinute[1]);
-  return now.difference(
-      DateTime(now.year, now.month, now.day, hour, minute, now.second));
+  DateTime now = DateTime.now();
+  DateTime other =
+      DateTime(now.year, now.month, now.day, hour, minute, now.second);
+  if (now.isAfter(other)) {
+    Duration diff = now.difference(other);
+    if (diff.inHours < 12) {
+      return diff;
+    } else {
+      other = other.add(Duration(days: 1));
+      return other.difference(now);
+    }
+  } else {
+    Duration diff = other.difference(now);
+    if (diff.inHours < 12) {
+      return diff;
+    } else {
+      other = other.subtract(Duration(days: 1));
+      return now.difference(other);
+    }
+  }
 }
 
 Dialog _showDateAndTimeDialog(String date, String time) {
