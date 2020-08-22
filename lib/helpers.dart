@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -8,6 +9,50 @@ double fontSize = 20;
 double edgeSize = 10;
 double distRadius = 300;
 double iconSize = 40;
+double opacity = 0.5;
+
+Stack showLoadingScreen() {
+  return Stack(
+    key: Key('loading'),
+    children: [
+      Container(
+        color: Colors.black87,
+      ),
+      Align(
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text('eRoubo',
+                  style: GoogleFonts.righteous(
+                      fontSize: 100, color: Colors.white)),
+            ),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text('Evite o Roubo de seu Celular',
+                  style: GoogleFonts.righteous(
+                      fontSize: fontSize, color: Colors.white)),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 100),
+              child: CircularProgressIndicator(),
+            )
+          ],
+        ),
+      )
+    ],
+  );
+}
+
+AppBar showAppBar() {
+  return AppBar(
+    title: Text('eRoubo', style: GoogleFonts.righteous()),
+    centerTitle: true,
+    backgroundColor: Colors.black54.withOpacity(opacity),
+  );
+}
 
 Future<LatLng> getLocation() async {
   Position position = await Geolocator()
@@ -22,7 +67,8 @@ Future<Map> getClusterData(String endPoint, LatLng location) async {
   return json.decode(response.body);
 }
 
-Circle newCircle(String date, String time, double latitude, double longitude) {
+Circle newCircle(BuildContext context, String date, String time,
+    double latitude, double longitude) {
   return Circle(
     circleId: CircleId('$latitude$longitude'),
     center: LatLng(latitude, longitude),
@@ -32,7 +78,7 @@ Circle newCircle(String date, String time, double latitude, double longitude) {
     fillColor: Colors.black.withOpacity(_getOpacityFromTime(time)),
     consumeTapEvents: true,
     onTap: () {
-      showDialog(child: _showDateAndTimeDialog(date, time));
+      showDialog(context: context, child: _showDateAndTimeDialog(date, time));
     },
   );
 }
@@ -46,7 +92,8 @@ Duration getTimeDiffFromNow(time) {
   DateTime now = DateTime.now();
   int hour = int.parse(hourMinute[0]);
   int minute = int.parse(hourMinute[1]);
-  return now.difference(DateTime(now.year, now.month, now.day, hour, minute, now.second));
+  return now.difference(
+      DateTime(now.year, now.month, now.day, hour, minute, now.second));
 }
 
 Dialog _showDateAndTimeDialog(String date, String time) {
@@ -80,6 +127,7 @@ Future<bool> checkDistance(LatLng coordinates, Set<Circle> circles) async {
 
 SnackBar snackBar(bool isHotspot, bool isNear) {
   return SnackBar(
+    backgroundColor: Colors.black54,
     padding: EdgeInsets.all(edgeSize),
     duration: Duration(days: 30),
     content: Column(
