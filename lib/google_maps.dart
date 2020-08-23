@@ -6,6 +6,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:e_roubo/helpers.dart';
 
 class GoogleMaps extends StatefulWidget {
+  
+  final geolocator;
+  GoogleMaps(this.geolocator) : super();
+  
   @override
   _GoogleMapsState createState() => _GoogleMapsState();
 }
@@ -25,7 +29,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
   StreamSubscription<Position> startTracking() {
     var locationOptions = LocationOptions(
         accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 10);
-    return Geolocator()
+    return widget.geolocator
         .getPositionStream(locationOptions)
         .listen((Position position) {
       coordinates = LatLng(position.latitude, position.longitude);
@@ -41,7 +45,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
         });
       });
 
-      checkDistance(coordinates, circles).then((isNear) {
+      checkDistance(widget.geolocator, coordinates, circles).then((isNear) {
         if (value['hotspot'] == true || isNear == true) {
           Scaffold.of(context).hideCurrentSnackBar();
           Scaffold.of(context).showSnackBar(snackBar(value['hotspot'], isNear));
@@ -54,7 +58,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
 
   @override
   void initState() {
-    location = getLocation();
+    location = getLocation(widget.geolocator);
     super.initState();
   }
 
@@ -74,8 +78,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
               break;
             default:
               coordinates = snapshot.data;
-              child = Stack(key: Key('main'), children: <Widget>[
+              child = Stack(
+                  children: <Widget>[
                 GoogleMap(
+                  key: Key('google_map'),
                   initialCameraPosition:
                       CameraPosition(target: coordinates, zoom: defaultZoom),
                   onMapCreated: (controller) {
@@ -90,6 +96,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
                   rotateGesturesEnabled: false,
                 ),
                 Align(
+                  key: Key('place_icon'),
                   alignment: Alignment.center,
                   child: Icon(Icons.place, size: iconSize, color: Colors.blue),
                 )
@@ -101,6 +108,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
       floatingActionButton: coordinates == null
           ? null
           : FloatingActionButton(
+              key: Key('my_location_button'),
               child: Icon(Icons.my_location),
               backgroundColor: Colors.black54.withOpacity(opacity),
               onPressed: () {

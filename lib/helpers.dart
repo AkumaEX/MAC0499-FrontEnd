@@ -55,10 +55,15 @@ AppBar showAppBar() {
   );
 }
 
-Future<LatLng> getLocation() async {
-  Position position = await Geolocator()
-      .getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
-  return LatLng(position.latitude, position.longitude);
+Future<LatLng> getLocation(Geolocator geolocator) async {
+  bool isLocationEnabled = await geolocator.isLocationServiceEnabled();
+  if (isLocationEnabled) {
+    Position position = await geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation);
+    return LatLng(position.latitude, position.longitude);
+  } else {
+    return LatLng(-23.5489, -46.6388);
+  }
 }
 
 Future<Map> getClusterData(String endPoint, LatLng location) async {
@@ -132,9 +137,10 @@ Dialog _showDateAndTimeDialog(String date, String time) {
   );
 }
 
-Future<bool> checkDistance(LatLng coordinates, Set<Circle> circles) async {
+Future<bool> checkDistance(
+    Geolocator geolocator, LatLng coordinates, Set<Circle> circles) async {
   for (Circle circle in circles) {
-    double distance = await Geolocator().distanceBetween(coordinates.latitude,
+    double distance = await geolocator.distanceBetween(coordinates.latitude,
         coordinates.longitude, circle.center.latitude, circle.center.longitude);
     if (distance < distRadius) {
       return true;
