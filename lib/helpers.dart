@@ -81,7 +81,7 @@ Circle newCircle(BuildContext context, String date, String time,
     radius: circleRadius,
     strokeWidth: 3,
     strokeColor: Colors.red,
-    fillColor: Colors.black.withOpacity(_getOpacityFromTime(time)),
+    fillColor: Colors.black.withOpacity(getOpacityFromTime(time)),
     consumeTapEvents: true,
     onTap: () {
       showDialog(context: context, child: _showDateAndTimeDialog(date, time));
@@ -89,14 +89,18 @@ Circle newCircle(BuildContext context, String date, String time,
   );
 }
 
-double _getOpacityFromTime(String time) {
-  return 1 - (getTimeDiffFromNow(time).inMinutes / 720);
+double getOpacityFromTime(String time) {
+  try {
+    List hourMinute = time.split(':');
+    int hour = int.parse(hourMinute[0]);
+    int minute = int.parse(hourMinute[1]);
+    return 1 - (getTimeDiffFromNow(hour, minute).inMinutes / 720);
+  } catch (e) {
+    return 0.5;
+  }
 }
 
-Duration getTimeDiffFromNow(time) {
-  List hourMinute = time.split(':');
-  int hour = int.parse(hourMinute[0]);
-  int minute = int.parse(hourMinute[1]);
+Duration getTimeDiffFromNow(hour, minute) {
   DateTime now = DateTime.now();
   DateTime other =
       DateTime(now.year, now.month, now.day, hour, minute, now.second);
@@ -121,6 +125,7 @@ Duration getTimeDiffFromNow(time) {
 
 Dialog _showDateAndTimeDialog(String date, String time) {
   return Dialog(
+    key: Key('info_dialog'),
     child: Padding(
       padding: EdgeInsets.all(edgeSize),
       child: Column(

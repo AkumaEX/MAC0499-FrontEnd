@@ -6,10 +6,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:e_roubo/helpers.dart';
 
 class GoogleMaps extends StatefulWidget {
-  
   final geolocator;
+
   GoogleMaps(this.geolocator) : super();
-  
+
   @override
   _GoogleMapsState createState() => _GoogleMapsState();
 }
@@ -38,17 +38,17 @@ class _GoogleMapsState extends State<GoogleMaps> {
   }
 
   Future showInfo(BuildContext context, LatLng coordinates) async {
-    getClusterData(endPoint, coordinates).then((value) {
+    getClusterData(endPoint, coordinates).then((data) {
       setState(() {
-        value['geo'].forEach((info) {
+        data['geo'].forEach((info) {
           circles.add(newCircle(context, info[0], info[1], info[2], info[3]));
         });
       });
 
       checkDistance(widget.geolocator, coordinates, circles).then((isNear) {
-        if (value['hotspot'] == true || isNear == true) {
+        if (data['hotspot'] == true || isNear == true) {
           Scaffold.of(context).hideCurrentSnackBar();
-          Scaffold.of(context).showSnackBar(snackBar(value['hotspot'], isNear));
+          Scaffold.of(context).showSnackBar(snackBar(data['hotspot'], isNear));
         } else {
           Scaffold.of(context).hideCurrentSnackBar();
         }
@@ -65,6 +65,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: Key('scaffold'),
       extendBodyBehindAppBar: true,
       appBar: coordinates == null ? null : showAppBar(),
       body: FutureBuilder(
@@ -78,8 +79,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
               break;
             default:
               coordinates = snapshot.data;
-              child = Stack(
-                  children: <Widget>[
+              child = Stack(children: <Widget>[
                 GoogleMap(
                   key: Key('google_map'),
                   initialCameraPosition:

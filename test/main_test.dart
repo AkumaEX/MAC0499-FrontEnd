@@ -22,7 +22,10 @@ Position get mockPosition => Position(
     speedAccuracy: 0.0);
 
 void main() {
-  group('Test Main Screen', () {
+
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  group('testWidgets', () {
     setUp(() {
       mockGeolocator = MockGeolocator();
       when(mockGeolocator.isLocationServiceEnabled())
@@ -30,6 +33,10 @@ void main() {
       when(mockGeolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.bestForNavigation))
           .thenAnswer((_) => Future.value(mockPosition));
+      when(mockGeolocator.getPositionStream(LocationOptions(
+              accuracy: LocationAccuracy.bestForNavigation,
+              distanceFilter: 10)))
+          .thenAnswer((_) => Stream.value(mockPosition));
     });
 
     Future<void> _createWidget(WidgetTester tester) async {
