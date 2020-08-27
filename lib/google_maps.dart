@@ -17,7 +17,6 @@ class GoogleMaps extends StatefulWidget {
 class _GoogleMapsState extends State<GoogleMaps> {
   double defaultZoom = 15;
   double iconSize = 40;
-  double opacity = 0.5;
   String endPoint = 'http://104.155.175.253/ml/api';
   Set<Circle> circles = Set<Circle>();
   Future<LatLng> location;
@@ -25,6 +24,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
   Map clusterData;
   LatLng coordinates;
   GoogleMapController mapController;
+  Color bgColor = Colors.black54.withOpacity(0.5);
 
   StreamSubscription<Position> startTracking() {
     var locationOptions = LocationOptions(
@@ -33,7 +33,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
         .getPositionStream(locationOptions)
         .listen((Position position) {
       coordinates = LatLng(position.latitude, position.longitude);
-      mapController.moveCamera(CameraUpdate.newLatLng(coordinates));
+      mapController.animateCamera(CameraUpdate.newLatLng(coordinates));
     });
   }
 
@@ -67,7 +67,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
     return Scaffold(
       key: Key('scaffold'),
       extendBodyBehindAppBar: true,
-      appBar: coordinates == null ? null : showAppBar(),
+      appBar: coordinates == null ? null : showAppBar(context),
       body: FutureBuilder(
         future: location,
         builder: (context, snapshot) {
@@ -98,7 +98,11 @@ class _GoogleMapsState extends State<GoogleMaps> {
                 Align(
                   key: Key('place_icon'),
                   alignment: Alignment.center,
-                  child: Icon(Icons.place, size: iconSize, color: Colors.blue),
+                  child: Icon(
+                    Icons.place,
+                    size: iconSize,
+                    color: Colors.blue,
+                  ),
                 )
               ]);
           }
@@ -108,9 +112,8 @@ class _GoogleMapsState extends State<GoogleMaps> {
       floatingActionButton: coordinates == null
           ? null
           : FloatingActionButton(
-              key: Key('my_location_button'),
               child: Icon(Icons.my_location),
-              backgroundColor: Colors.black54.withOpacity(opacity),
+              backgroundColor: bgColor,
               onPressed: () {
                 positionStream.cancel();
                 positionStream = startTracking();

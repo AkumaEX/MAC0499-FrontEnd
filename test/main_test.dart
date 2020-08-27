@@ -22,7 +22,6 @@ Position get mockPosition => Position(
     speedAccuracy: 0.0);
 
 void main() {
-
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('testWidgets', () {

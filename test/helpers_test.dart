@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 import 'package:e_roubo/helpers.dart';
-import 'package:test/test.dart';
 import 'package:flutter_test/flutter_test.dart' as flutter_test;
 
 void main() {
@@ -11,11 +9,6 @@ void main() {
   test('Show loading screen', () {
     var loadingScreen = showLoadingScreen();
     expect(loadingScreen, isA<Stack>());
-  });
-
-  test('Show AppBar', () {
-    var appBar = showAppBar();
-    expect(appBar, isA<AppBar>());
   });
 
   test('Time diff from now', () {
@@ -40,5 +33,16 @@ void main() {
   test('Opacity from invalid time', () {
     double invalid = getOpacityFromTime('invalid time');
     expect(invalid, 0.5);
+  });
+
+  flutter_test.testWidgets('Show AppBar',
+      (flutter_test.WidgetTester tester) async {
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        var appBar = showAppBar(context);
+        expect(appBar, isA<AppBar>());
+        return Container();
+      },
+    ));
   });
 }

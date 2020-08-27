@@ -6,11 +6,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 double fontSize = 20;
-double edgeSize = 10;
+double edgeSize = 20;
 double distRadius = 300;
 double circleRadius = 30;
 double iconSize = 40;
-double opacity = 0.5;
+Color bgColor = Colors.black54.withOpacity(0.5);
 
 Stack showLoadingScreen() {
   return Stack(
@@ -47,11 +47,17 @@ Stack showLoadingScreen() {
   );
 }
 
-AppBar showAppBar() {
+AppBar showAppBar(BuildContext context) {
   return AppBar(
     title: Text('eRoubo', style: GoogleFonts.righteous()),
     centerTitle: true,
-    backgroundColor: Colors.black54.withOpacity(opacity),
+    backgroundColor: bgColor,
+    actions: [
+      IconButton(
+        icon: Icon(Icons.more_vert),
+        onPressed: () => showPopupMenu(context),
+      )
+    ],
   );
 }
 
@@ -83,9 +89,7 @@ Circle newCircle(BuildContext context, String date, String time,
     strokeColor: Colors.red,
     fillColor: Colors.black.withOpacity(getOpacityFromTime(time)),
     consumeTapEvents: true,
-    onTap: () {
-      showDialog(context: context, child: _showDateAndTimeDialog(date, time));
-    },
+    onTap: () => showDateAndTimeDialog(context, date, time),
   );
 }
 
@@ -123,23 +127,24 @@ Duration getTimeDiffFromNow(hour, minute) {
   }
 }
 
-Dialog _showDateAndTimeDialog(String date, String time) {
-  return Dialog(
-    key: Key('info_dialog'),
-    child: Padding(
-      padding: EdgeInsets.all(edgeSize),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('Informações do Roubo',
-              style:
-                  TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
-          Text('Data: $date', style: TextStyle(fontSize: fontSize)),
-          Text('Horário: $time', style: TextStyle(fontSize: fontSize))
-        ],
-      ),
-    ),
-  );
+Future showDateAndTimeDialog(BuildContext context, String date, String time) {
+  return showDialog(
+      context: context,
+      child: Dialog(
+        child: Padding(
+          padding: EdgeInsets.all(edgeSize),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Informações do Roubo',
+                  style: TextStyle(
+                      fontSize: fontSize, fontWeight: FontWeight.bold)),
+              Text('Data: $date', style: TextStyle(fontSize: fontSize)),
+              Text('Horário: $time', style: TextStyle(fontSize: fontSize))
+            ],
+          ),
+        ),
+      ));
 }
 
 Future<bool> checkDistance(
@@ -181,5 +186,119 @@ SnackBar snackBar(bool isHotspot, bool isNear) {
         ))
       ],
     ),
+  );
+}
+
+Future showPopupMenu(BuildContext context) {
+  return showDialog(
+      context: context,
+      child: SimpleDialog(
+        title: Text('Selecione',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => showHelp(context),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.help),
+                Padding(
+                  padding: EdgeInsets.all(edgeSize),
+                  child: Text(
+                    'Ajuda',
+                    style: TextStyle(fontSize: fontSize),
+                  ),
+                )
+              ],
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => showMoreInfo(context),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.info),
+                Padding(
+                  padding: EdgeInsets.all(edgeSize),
+                  child: Text(
+                    'Sobre',
+                    style: TextStyle(fontSize: fontSize),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ));
+}
+
+Future showHelp(BuildContext context) {
+  return showDialog(
+      context: context,
+      child: Dialog(
+        child: Padding(
+          padding: EdgeInsets.all(edgeSize),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Ajuda',
+                  style: TextStyle(
+                      fontSize: fontSize, fontWeight: FontWeight.bold)),
+              SizedBox(height: edgeSize),
+              Row(
+                children: [
+                  Stack(
+                    children: [
+                      Icon(Icons.lens, color: Colors.grey),
+                      Icon(Icons.lens_outlined, color: Colors.red),
+                    ],
+                  ),
+                  SizedBox(width: edgeSize),
+                  Flexible(
+                      child: Text('Crime que ocorreu em horário distante',
+                          style: TextStyle(fontSize: fontSize)))
+                ],
+              ),
+              SizedBox(height: edgeSize),
+              Row(
+                children: [
+                  Stack(
+                    children: [
+                      Icon(Icons.lens, color: Colors.black),
+                      Icon(Icons.lens_outlined, color: Colors.red)
+                    ],
+                  ),
+                  SizedBox(width: edgeSize),
+                  Flexible(
+                    child: Text('Crime que ocorreu em horário próximo',
+                        style: TextStyle(fontSize: fontSize)),
+                  )
+                ],
+              ),
+              SizedBox(height: edgeSize),
+              Row(
+                children: [
+                  Icon(Icons.place, color: Colors.blue),
+                  SizedBox(width: edgeSize),
+                  Flexible(
+                    child: Text('Sua localização',
+                        style: TextStyle(fontSize: fontSize)),
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+      ));
+}
+
+void showMoreInfo(BuildContext context) {
+  return showAboutDialog(
+    context: context,
+    applicationName: 'eRoubo',
+    applicationVersion: '0.1.0',
+    applicationLegalese:
+        'Desenvolvido por Julio Kenji Ueda como parte do Trabalho de Conclusão do Curso de Bacharelado em Ciência da Computação do Instituto de Matemática e Estatística da Universidade de São Paulo',
   );
 }
