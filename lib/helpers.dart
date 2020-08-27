@@ -162,7 +162,6 @@ Future<bool> checkDistance(
 SnackBar snackBar(bool isHotspot, bool isNear) {
   return SnackBar(
     backgroundColor: Colors.black54,
-    padding: EdgeInsets.all(edgeSize),
     duration: Duration(days: 30),
     content: Column(
       mainAxisSize: MainAxisSize.min,
