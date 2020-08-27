@@ -250,7 +250,7 @@ Future showHelp(BuildContext context) {
                   Stack(
                     children: [
                       Icon(Icons.lens, color: Colors.grey),
-                      Icon(Icons.lens_outlined, color: Colors.red),
+                      Icon(Icons.panorama_fish_eye, color: Colors.red),
                     ],
                   ),
                   SizedBox(width: edgeSize),
@@ -265,7 +265,7 @@ Future showHelp(BuildContext context) {
                   Stack(
                     children: [
                       Icon(Icons.lens, color: Colors.black),
-                      Icon(Icons.lens_outlined, color: Colors.red)
+                      Icon(Icons.panorama_fish_eye, color: Colors.red)
                     ],
                   ),
                   SizedBox(width: edgeSize),
