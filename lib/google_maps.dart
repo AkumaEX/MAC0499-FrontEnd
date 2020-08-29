@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:e_roubo/helpers.dart';
 
 class GoogleMaps extends StatefulWidget {
@@ -25,6 +26,8 @@ class _GoogleMapsState extends State<GoogleMaps> {
   LatLng coordinates;
   GoogleMapController mapController;
   Color bgColor = Colors.black54.withOpacity(0.5);
+  AppBar appBar;
+  FloatingActionButton floatingActionButton;
 
   StreamSubscription<Position> startTracking() {
     var locationOptions = LocationOptions(
@@ -37,6 +40,34 @@ class _GoogleMapsState extends State<GoogleMaps> {
     });
   }
 
+  AppBar showAppBar(BuildContext context) {
+    return AppBar(
+      title: Text('eRoubo', style: GoogleFonts.righteous(fontSize: fontSize)),
+      centerTitle: true,
+      backgroundColor: bgColor,
+      actions: [
+        IconButton(
+          icon: Icon(Icons.search),
+          onPressed: () => showSearchDialog(context, mapController),
+        ),
+        IconButton(
+          icon: Icon(Icons.more_vert),
+          onPressed: () => showPopupMenu(context),
+        )
+      ],
+    );
+  }
+
+  FloatingActionButton showFloatingActionButton() {
+    return FloatingActionButton(
+        child: Icon(Icons.my_location),
+        backgroundColor: bgColor,
+        onPressed: () {
+          positionStream.cancel();
+          positionStream = startTracking();
+        });
+  }
+
   Future showInfo(BuildContext context, LatLng coordinates) async {
     getClusterData(endPoint, coordinates).then((data) {
       setState(() {
@@ -46,7 +77,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
       });
 
       checkDistance(widget.geolocator, coordinates, circles).then((isNear) {
-        if (data['hotspot'] == true || isNear == true) {
+        if (data['hotspot'] || isNear) {
           Scaffold.of(context).hideCurrentSnackBar();
           Scaffold.of(context).showSnackBar(snackBar(data['hotspot'], isNear));
         } else {
@@ -65,9 +96,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       key: Key('scaffold'),
       extendBodyBehindAppBar: true,
-      appBar: coordinates == null ? null : showAppBar(context),
+      appBar: appBar,
       body: FutureBuilder(
         future: location,
         builder: (context, snapshot) {
@@ -82,11 +114,15 @@ class _GoogleMapsState extends State<GoogleMaps> {
               child = Stack(children: <Widget>[
                 GoogleMap(
                   key: Key('google_map'),
-                  initialCameraPosition:
-                      CameraPosition(target: coordinates, zoom: defaultZoom),
+                  initialCameraPosition: CameraPosition(
+                    target: coordinates,
+                    zoom: defaultZoom,
+                  ),
                   onMapCreated: (controller) {
                     mapController = controller;
                     positionStream = startTracking();
+                    appBar = showAppBar(context);
+                    floatingActionButton = showFloatingActionButton();
                   },
                   onCameraMoveStarted: () => positionStream.cancel(),
                   onCameraMove: (position) => coordinates = position.target,
@@ -98,26 +134,14 @@ class _GoogleMapsState extends State<GoogleMaps> {
                 Align(
                   key: Key('place_icon'),
                   alignment: Alignment.center,
-                  child: Icon(
-                    Icons.place,
-                    size: iconSize,
-                    color: Colors.blue,
-                  ),
+                  child: Icon(Icons.place, size: iconSize, color: Colors.blue),
                 )
               ]);
           }
           return AnimatedSwitcher(duration: Duration(seconds: 3), child: child);
         },
       ),
-      floatingActionButton: coordinates == null
-          ? null
-          : FloatingActionButton(
-              child: Icon(Icons.my_location),
-              backgroundColor: bgColor,
-              onPressed: () {
-                positionStream.cancel();
-                positionStream = startTracking();
-              }),
+      floatingActionButton: floatingActionButton,
     );
   }
 }

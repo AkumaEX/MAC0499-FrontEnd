@@ -40,12 +40,6 @@ void main() {
 
     Future<void> _createWidget(WidgetTester tester) async {
       await tester.pumpWidget(MaterialApp(
-        title: 'eRoubo',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
         home: GoogleMaps(mockGeolocator),
       ));
       await tester.pump();

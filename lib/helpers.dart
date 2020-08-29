@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,9 +18,7 @@ Stack showLoadingScreen() {
   return Stack(
     key: Key('loading'),
     children: [
-      Container(
-        color: Colors.black87,
-      ),
+      Container(color: Colors.black87),
       Align(
         alignment: Alignment.center,
         child: Column(
@@ -36,26 +36,12 @@ Stack showLoadingScreen() {
                   style: GoogleFonts.righteous(
                       fontSize: fontSize, color: Colors.white)),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 100),
-              child: CircularProgressIndicator(),
-            )
+            SizedBox(
+              height: 100,
+            ),
+            CircularProgressIndicator(),
           ],
         ),
-      )
-    ],
-  );
-}
-
-AppBar showAppBar(BuildContext context) {
-  return AppBar(
-    title: Text('eRoubo', style: GoogleFonts.righteous()),
-    centerTitle: true,
-    backgroundColor: bgColor,
-    actions: [
-      IconButton(
-        icon: Icon(Icons.more_vert),
-        onPressed: () => showPopupMenu(context),
       )
     ],
   );
@@ -130,20 +116,16 @@ Duration getTimeDiffFromNow(hour, minute) {
 Future showDateAndTimeDialog(BuildContext context, String date, String time) {
   return showDialog(
       context: context,
-      child: Dialog(
-        child: Padding(
-          padding: EdgeInsets.all(edgeSize),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Informações do Roubo',
-                  style: TextStyle(
-                      fontSize: fontSize, fontWeight: FontWeight.bold)),
-              Text('Data: $date', style: TextStyle(fontSize: fontSize)),
-              Text('Horário: $time', style: TextStyle(fontSize: fontSize))
-            ],
-          ),
-        ),
+      child: SimpleDialog(
+        title: Text('Informação do Roubo', textAlign: TextAlign.center),
+        children: [
+          Text('Data: $date',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: fontSize)),
+          Text('Horário: $time',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: fontSize)),
+        ],
       ));
 }
 
@@ -161,7 +143,7 @@ Future<bool> checkDistance(
 
 SnackBar snackBar(bool isHotspot, bool isNear) {
   return SnackBar(
-    backgroundColor: Colors.black54,
+    backgroundColor: bgColor,
     duration: Duration(days: 30),
     content: Column(
       mainAxisSize: MainAxisSize.min,
@@ -169,20 +151,48 @@ SnackBar snackBar(bool isHotspot, bool isNear) {
         Icon(
           Icons.warning,
           size: iconSize,
-          color: (isHotspot == true && isNear == true)
-              ? Colors.red
-              : Colors.yellow,
+          color: (isHotspot && isNear) ? Colors.red : Colors.yellow,
         ),
         Flexible(
             child: Text(
-          (isHotspot == true && isNear == true)
+          (isHotspot && isNear)
               ? 'Área de risco e próximo a um local de crime'
-              : (isHotspot == true)
-                  ? 'Área de risco'
-                  : 'Próximo a um local de crime',
+              : (isHotspot) ? 'Área de risco' : 'Próximo a um local de crime',
           style: TextStyle(fontSize: fontSize),
           textAlign: TextAlign.center,
         ))
+      ],
+    ),
+  );
+}
+
+Future showSearchDialog(
+    BuildContext context, GoogleMapController mapController) {
+  return showDialog(
+    context: context,
+    child: SimpleDialog(
+      title: Text('Busca', textAlign: TextAlign.center),
+      contentPadding: EdgeInsets.all(edgeSize),
+      children: [
+        TextField(
+          autofocus: true,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: fontSize),
+          onEditingComplete: () => Navigator.pop(context),
+          onSubmitted: (address) async {
+            try {
+              List<Placemark> placemarks =
+                  await Geolocator().placemarkFromAddress(address);
+              if (placemarks.isNotEmpty) {
+                Position position = placemarks.first.position;
+                LatLng coordinates =
+                    LatLng(position.latitude, position.longitude);
+                mapController
+                    .animateCamera(CameraUpdate.newLatLng(coordinates));
+              }
+            } catch (e) {}
+          },
+        )
       ],
     ),
   );
@@ -192,9 +202,8 @@ Future showPopupMenu(BuildContext context) {
   return showDialog(
       context: context,
       child: SimpleDialog(
-        title: Text('Selecione',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
+        title: Text('Menu', textAlign: TextAlign.center),
+        contentPadding: EdgeInsets.all(edgeSize),
         children: [
           SimpleDialogOption(
             onPressed: () => showHelp(context),
@@ -202,13 +211,8 @@ Future showPopupMenu(BuildContext context) {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.help),
-                Padding(
-                  padding: EdgeInsets.all(edgeSize),
-                  child: Text(
-                    'Ajuda',
-                    style: TextStyle(fontSize: fontSize),
-                  ),
-                )
+                SizedBox(width: edgeSize),
+                Text('Instruções', style: TextStyle(fontSize: fontSize)),
               ],
             ),
           ),
@@ -218,13 +222,8 @@ Future showPopupMenu(BuildContext context) {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.info),
-                Padding(
-                  padding: EdgeInsets.all(edgeSize),
-                  child: Text(
-                    'Sobre',
-                    style: TextStyle(fontSize: fontSize),
-                  ),
-                )
+                SizedBox(width: edgeSize),
+                Text('Sobre', style: TextStyle(fontSize: fontSize)),
               ],
             ),
           )
@@ -235,60 +234,67 @@ Future showPopupMenu(BuildContext context) {
 Future showHelp(BuildContext context) {
   return showDialog(
       context: context,
-      child: Dialog(
-        child: Padding(
-          padding: EdgeInsets.all(edgeSize),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      child: SimpleDialog(
+        title: Text('Instruções', textAlign: TextAlign.center),
+        contentPadding: EdgeInsets.all(edgeSize),
+        children: [
+          Row(
             children: [
-              Text('Ajuda',
-                  style: TextStyle(
-                      fontSize: fontSize, fontWeight: FontWeight.bold)),
-              SizedBox(height: edgeSize),
-              Row(
+              Stack(
                 children: [
-                  Stack(
-                    children: [
-                      Icon(Icons.lens, color: Colors.grey),
-                      Icon(Icons.panorama_fish_eye, color: Colors.red),
-                    ],
-                  ),
-                  SizedBox(width: edgeSize),
-                  Flexible(
-                      child: Text('Crime que ocorreu em horário distante',
-                          style: TextStyle(fontSize: fontSize)))
+                  Icon(Icons.lens, color: Colors.white),
+                  Icon(Icons.panorama_fish_eye, color: Colors.red),
                 ],
               ),
-              SizedBox(height: edgeSize),
-              Row(
+              SizedBox(width: edgeSize),
+              Flexible(
+                  child: Text('Crime que ocorreu em horário muito distante',
+                      style: TextStyle(fontSize: fontSize)))
+            ],
+          ),
+          SizedBox(height: edgeSize),
+          Row(
+            children: [
+              Stack(
                 children: [
-                  Stack(
-                    children: [
-                      Icon(Icons.lens, color: Colors.black),
-                      Icon(Icons.panorama_fish_eye, color: Colors.red)
-                    ],
-                  ),
-                  SizedBox(width: edgeSize),
-                  Flexible(
-                    child: Text('Crime que ocorreu em horário próximo',
-                        style: TextStyle(fontSize: fontSize)),
-                  )
+                  Icon(Icons.lens, color: Colors.grey),
+                  Icon(Icons.panorama_fish_eye, color: Colors.red),
                 ],
               ),
-              SizedBox(height: edgeSize),
-              Row(
+              SizedBox(width: edgeSize),
+              Flexible(
+                  child: Text('Crime que ocorreu em horário distante',
+                      style: TextStyle(fontSize: fontSize)))
+            ],
+          ),
+          SizedBox(height: edgeSize),
+          Row(
+            children: [
+              Stack(
                 children: [
-                  Icon(Icons.place, color: Colors.blue),
-                  SizedBox(width: edgeSize),
-                  Flexible(
-                    child: Text('Sua localização',
-                        style: TextStyle(fontSize: fontSize)),
-                  )
+                  Icon(Icons.lens, color: Colors.black),
+                  Icon(Icons.panorama_fish_eye, color: Colors.red)
                 ],
+              ),
+              SizedBox(width: edgeSize),
+              Flexible(
+                child: Text('Crime que ocorreu em horário próximo',
+                    style: TextStyle(fontSize: fontSize)),
               )
             ],
           ),
-        ),
+          SizedBox(height: edgeSize),
+          Row(
+            children: [
+              Icon(Icons.place, color: Colors.blue),
+              SizedBox(width: edgeSize),
+              Flexible(
+                child: Text('Sua localização',
+                    style: TextStyle(fontSize: fontSize)),
+              )
+            ],
+          )
+        ],
       ));
 }
 

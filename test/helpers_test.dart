@@ -34,15 +34,4 @@ void main() {
     double invalid = getOpacityFromTime('invalid time');
     expect(invalid, 0.5);
   });
-
-  flutter_test.testWidgets('Show AppBar',
-      (flutter_test.WidgetTester tester) async {
-    await tester.pumpWidget(Builder(
-      builder: (BuildContext context) {
-        var appBar = showAppBar(context);
-        expect(appBar, isA<AppBar>());
-        return Container();
-      },
-    ));
-  });
 }
