@@ -3,14 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:e_roubo/helpers.dart';
+import 'package:e_roubo/scaffold_contents.dart';
+import 'package:e_roubo/geolocator_contents.dart';
 
 class GoogleMaps extends StatefulWidget {
-  final geolocator;
-
-  GoogleMaps(this.geolocator) : super();
-
   @override
   _GoogleMapsState createState() => _GoogleMapsState();
 }
@@ -29,45 +26,6 @@ class _GoogleMapsState extends State<GoogleMaps> {
   AppBar appBar;
   FloatingActionButton floatingActionButton;
 
-  StreamSubscription<Position> startTracking() {
-    var locationOptions = LocationOptions(
-        accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 10);
-    return widget.geolocator
-        .getPositionStream(locationOptions)
-        .listen((Position position) {
-      coordinates = LatLng(position.latitude, position.longitude);
-      mapController.animateCamera(CameraUpdate.newLatLng(coordinates));
-    });
-  }
-
-  AppBar showAppBar(BuildContext context) {
-    return AppBar(
-      title: Text('eRoubo', style: GoogleFonts.righteous(fontSize: fontSize)),
-      centerTitle: true,
-      backgroundColor: bgColor,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () => showSearchDialog(context, mapController),
-        ),
-        IconButton(
-          icon: Icon(Icons.more_vert),
-          onPressed: () => showPopupMenu(context),
-        )
-      ],
-    );
-  }
-
-  FloatingActionButton showFloatingActionButton() {
-    return FloatingActionButton(
-        child: Icon(Icons.my_location),
-        backgroundColor: bgColor,
-        onPressed: () {
-          positionStream.cancel();
-          positionStream = startTracking();
-        });
-  }
-
   Future showInfo(BuildContext context, LatLng coordinates) async {
     getClusterData(endPoint, coordinates).then((data) {
       setState(() {
@@ -76,12 +34,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
         });
       });
 
-      checkDistance(widget.geolocator, coordinates, circles).then((isNear) {
+      checkDistance(coordinates, circles).then((isNear) {
+        Scaffold.of(context).hideCurrentSnackBar();
         if (data['hotspot'] || isNear) {
-          Scaffold.of(context).hideCurrentSnackBar();
           Scaffold.of(context).showSnackBar(snackBar(data['hotspot'], isNear));
-        } else {
-          Scaffold.of(context).hideCurrentSnackBar();
         }
       });
     });
@@ -89,7 +45,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
 
   @override
   void initState() {
-    location = getLocation(widget.geolocator);
+    location = getLocation();
     super.initState();
   }
 
@@ -120,9 +76,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
                   ),
                   onMapCreated: (controller) {
                     mapController = controller;
-                    positionStream = startTracking();
-                    appBar = showAppBar(context);
-                    floatingActionButton = showFloatingActionButton();
+                    positionStream = startTracking(coordinates, mapController);
+                    appBar = showAppBar(context, mapController);
+                    floatingActionButton = showFloatingActionButton(
+                        positionStream, coordinates, mapController);
                   },
                   onCameraMoveStarted: () => positionStream.cancel(),
                   onCameraMove: (position) => coordinates = position.target,
