@@ -61,7 +61,7 @@ Future showPopupMenu(BuildContext context) {
         contentPadding: EdgeInsets.all(edgeSize),
         children: [
           SimpleDialogOption(
-            onPressed: () => showHelp(context),
+            onPressed: () => showInstructions(context),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -86,69 +86,119 @@ Future showPopupMenu(BuildContext context) {
       ));
 }
 
-Future showHelp(BuildContext context) {
+Future showInstructions(BuildContext context) {
   return showDialog(
       context: context,
-      child: SimpleDialog(
+      child: AlertDialog(
         title: Text('Instruções', textAlign: TextAlign.center),
         contentPadding: EdgeInsets.all(edgeSize),
-        children: [
-          Row(
+        contentTextStyle: TextStyle(fontSize: fontSize, color: Colors.black),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Stack(
+              Flexible(
+                  child: Text(
+                      'Cada roubo é representado por um círculo vermelho no mapa. A tonalidade interna representa a proximidade com o seu horário:')),
+              SizedBox(height: edgeSize),
+              Row(
                 children: [
-                  Icon(Icons.lens, color: Colors.white),
-                  Icon(Icons.panorama_fish_eye, color: Colors.red),
+                  Stack(
+                    children: [
+                      Icon(Icons.lens, color: Colors.white),
+                      Icon(Icons.panorama_fish_eye, color: Colors.red),
+                    ],
+                  ),
+                  SizedBox(width: edgeSize),
+                  Flexible(
+                      child:
+                          Text('Roubo ocorrido em um horário muito distante'))
                 ],
               ),
-              SizedBox(width: edgeSize),
-              Flexible(
-                  child: Text('Crime que ocorreu em horário muito distante',
-                      style: TextStyle(fontSize: fontSize)))
-            ],
-          ),
-          SizedBox(height: edgeSize),
-          Row(
-            children: [
-              Stack(
+              SizedBox(height: edgeSize),
+              Row(
                 children: [
-                  Icon(Icons.lens, color: Colors.grey),
-                  Icon(Icons.panorama_fish_eye, color: Colors.red),
+                  Stack(
+                    children: [
+                      Icon(Icons.lens, color: Colors.grey),
+                      Icon(Icons.panorama_fish_eye, color: Colors.red),
+                    ],
+                  ),
+                  SizedBox(width: edgeSize),
+                  Flexible(child: Text('Roubo ocorrido em um horário distante'))
                 ],
               ),
-              SizedBox(width: edgeSize),
-              Flexible(
-                  child: Text('Crime que ocorreu em horário distante',
-                      style: TextStyle(fontSize: fontSize)))
-            ],
-          ),
-          SizedBox(height: edgeSize),
-          Row(
-            children: [
-              Stack(
+              SizedBox(height: edgeSize),
+              Row(
                 children: [
-                  Icon(Icons.lens, color: Colors.black),
-                  Icon(Icons.panorama_fish_eye, color: Colors.red)
+                  Stack(
+                    children: [
+                      Icon(Icons.lens, color: Colors.black),
+                      Icon(Icons.panorama_fish_eye, color: Colors.red)
+                    ],
+                  ),
+                  SizedBox(width: edgeSize),
+                  Flexible(child: Text('Roubo ocorrido em um horário próximo'))
                 ],
               ),
-              SizedBox(width: edgeSize),
+              SizedBox(height: edgeSize),
               Flexible(
-                child: Text('Crime que ocorreu em horário próximo',
-                    style: TextStyle(fontSize: fontSize)),
-              )
+                  child: Text('Alertas aparecem na parte de baixo da tela')),
+              SizedBox(height: edgeSize),
+              Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.yellow),
+                  SizedBox(width: edgeSize),
+                  Flexible(child: Text('Atenção ao uso do celular'))
+                ],
+              ),
+              SizedBox(height: edgeSize),
+              Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.red),
+                  SizedBox(width: edgeSize),
+                  Flexible(child: Text('Evite o uso do celular'))
+                ],
+              ),
+              SizedBox(height: edgeSize),
+              Flexible(
+                  child: Text(
+                      'Os dados são apresentados de acordo com a sua localização. Arraste a tela para pesquisar ao redor')),
+              SizedBox(height: edgeSize),
+              Row(
+                children: [
+                  Icon(Icons.place, color: Colors.blue),
+                  SizedBox(width: edgeSize),
+                  Flexible(child: Text('Sua localização'))
+                ],
+              ),
+              SizedBox(height: edgeSize),
+              Row(
+                children: [
+                  Icon(Icons.search),
+                  SizedBox(width: edgeSize),
+                  Flexible(child: Text('Ferramenta de busca de local'))
+                ],
+              ),
+              SizedBox(height: edgeSize),
+              Row(
+                children: [
+                  Icon(Icons.my_location),
+                  SizedBox(width: edgeSize),
+                  Flexible(child: Text('Botão para retornar à sua localização'))
+                ],
+              ),
             ],
           ),
-          SizedBox(height: edgeSize),
-          Row(
-            children: [
-              Icon(Icons.place, color: Colors.blue),
-              SizedBox(width: edgeSize),
-              Flexible(
-                child: Text('Sua localização',
-                    style: TextStyle(fontSize: fontSize)),
-              )
-            ],
-          )
+        ),
+        actions: [
+          FlatButton(
+            padding: EdgeInsets.only(right: edgeSize, bottom: edgeSize),
+            child: Text('OK', style: TextStyle(fontSize: fontSize)),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
         ],
       ));
 }

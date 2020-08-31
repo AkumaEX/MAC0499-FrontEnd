@@ -1,9 +1,6 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:e_roubo/dialogs.dart';
 
 double edgeSize = 20;
@@ -12,7 +9,6 @@ Color bgColor = Colors.black54.withOpacity(0.5);
 
 Stack showLoadingScreen() {
   return Stack(
-    key: Key('loading'),
     children: [
       Container(color: Colors.black87),
       Align(
@@ -41,13 +37,6 @@ Stack showLoadingScreen() {
       )
     ],
   );
-}
-
-Future<Map> getClusterData(String endPoint, LatLng location) async {
-  var url =
-      '$endPoint?latitude=${location.latitude}&longitude=${location.longitude}';
-  http.Response response = await http.get(url);
-  return json.decode(response.body);
 }
 
 Circle newCircle(BuildContext context, String date, String time,
