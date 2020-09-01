@@ -1,3 +1,4 @@
+import 'package:e_roubo/text_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,13 +11,11 @@ Future showDateAndTimeDialog(BuildContext context, String date, String time) {
       context: context,
       child: SimpleDialog(
         title: Text('Informação do Roubo', textAlign: TextAlign.center),
+        contentPadding:
+            EdgeInsets.symmetric(vertical: edgeSize, horizontal: 2 * edgeSize),
         children: [
-          Text('Data: $date',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: fontSize)),
-          Text('Horário: $time',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: fontSize)),
+          IconText(icons: [Icon(Icons.event)], text: '$date'),
+          IconText(icons: [Icon(Icons.schedule)], text: '$time')
         ],
       ));
 }
@@ -61,27 +60,11 @@ Future showPopupMenu(BuildContext context) {
         contentPadding: EdgeInsets.all(edgeSize),
         children: [
           SimpleDialogOption(
-            onPressed: () => showInstructions(context),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.help),
-                SizedBox(width: edgeSize),
-                Text('Instruções', style: TextStyle(fontSize: fontSize)),
-              ],
-            ),
-          ),
+              onPressed: () => showInstructions(context),
+              child: IconText(icons: [Icon(Icons.help)], text: 'Instruções')),
           SimpleDialogOption(
-            onPressed: () => showMoreInfo(context),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.info),
-                SizedBox(width: edgeSize),
-                Text('Sobre', style: TextStyle(fontSize: fontSize)),
-              ],
-            ),
-          )
+              onPressed: () => showMoreInfo(context),
+              child: IconText(icons: [Icon(Icons.info)], text: 'Sobre'))
         ],
       ));
 }
@@ -97,97 +80,40 @@ Future showInstructions(BuildContext context) {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Flexible(
-                  child: Text(
-                      'Cada roubo é representado por um círculo vermelho no mapa. A tonalidade interna representa a proximidade com o seu horário:')),
-              SizedBox(height: edgeSize),
-              Row(
-                children: [
-                  Stack(
-                    children: [
-                      Icon(Icons.lens, color: Colors.white),
-                      Icon(Icons.panorama_fish_eye, color: Colors.red),
-                    ],
-                  ),
-                  SizedBox(width: edgeSize),
-                  Flexible(
-                      child:
-                          Text('Roubo ocorrido em um horário muito distante'))
-                ],
-              ),
-              SizedBox(height: edgeSize),
-              Row(
-                children: [
-                  Stack(
-                    children: [
-                      Icon(Icons.lens, color: Colors.grey),
-                      Icon(Icons.panorama_fish_eye, color: Colors.red),
-                    ],
-                  ),
-                  SizedBox(width: edgeSize),
-                  Flexible(child: Text('Roubo ocorrido em um horário distante'))
-                ],
-              ),
-              SizedBox(height: edgeSize),
-              Row(
-                children: [
-                  Stack(
-                    children: [
-                      Icon(Icons.lens, color: Colors.black),
-                      Icon(Icons.panorama_fish_eye, color: Colors.red)
-                    ],
-                  ),
-                  SizedBox(width: edgeSize),
-                  Flexible(child: Text('Roubo ocorrido em um horário próximo'))
-                ],
-              ),
-              SizedBox(height: edgeSize),
-              Flexible(
-                  child: Text('Alertas aparecem na parte de baixo da tela')),
-              SizedBox(height: edgeSize),
-              Row(
-                children: [
-                  Icon(Icons.warning, color: Colors.yellow),
-                  SizedBox(width: edgeSize),
-                  Flexible(child: Text('Atenção ao uso do celular'))
-                ],
-              ),
-              SizedBox(height: edgeSize),
-              Row(
-                children: [
-                  Icon(Icons.warning, color: Colors.red),
-                  SizedBox(width: edgeSize),
-                  Flexible(child: Text('Evite o uso do celular'))
-                ],
-              ),
-              SizedBox(height: edgeSize),
-              Flexible(
-                  child: Text(
-                      'Os dados são apresentados de acordo com a sua localização. Arraste a tela para pesquisar ao redor')),
-              SizedBox(height: edgeSize),
-              Row(
-                children: [
-                  Icon(Icons.place, color: Colors.blue),
-                  SizedBox(width: edgeSize),
-                  Flexible(child: Text('Sua localização'))
-                ],
-              ),
-              SizedBox(height: edgeSize),
-              Row(
-                children: [
-                  Icon(Icons.search),
-                  SizedBox(width: edgeSize),
-                  Flexible(child: Text('Ferramenta de busca de local'))
-                ],
-              ),
-              SizedBox(height: edgeSize),
-              Row(
-                children: [
-                  Icon(Icons.my_location),
-                  SizedBox(width: edgeSize),
-                  Flexible(child: Text('Botão para retornar à sua localização'))
-                ],
-              ),
+              IconText(
+                  text:
+                      'Cada roubo é representado por um círculo vermelho no mapa. A tonalidade interna representa a proximidade com o seu horário:'),
+              IconText(icons: [
+                Icon(Icons.lens, color: Colors.white),
+                Icon(Icons.panorama_fish_eye, color: Colors.red)
+              ], text: 'Roubo ocorrido em um horário muito distante'),
+              IconText(icons: [
+                Icon(Icons.lens, color: Colors.grey),
+                Icon(Icons.panorama_fish_eye, color: Colors.red)
+              ], text: 'Roubo ocorrido em um horário distante'),
+              IconText(icons: [
+                Icon(Icons.lens, color: Colors.black),
+                Icon(Icons.panorama_fish_eye, color: Colors.red)
+              ], text: 'Roubo ocorrido em um horário próximo'),
+              IconText(text: 'Alertas aparecem na parte de baixo da tela:'),
+              IconText(
+                  icons: [Icon(Icons.warning, color: Colors.yellow)],
+                  text: 'Atenção ao uso do celular'),
+              IconText(
+                  icons: [Icon(Icons.warning, color: Colors.red)],
+                  text: 'Evite o uso do celular'),
+              IconText(
+                  text:
+                      'Os dados são apresentados de acordo com a sua localização. Arraste a tela para pesquisar ao redor.'),
+              IconText(
+                  icons: [Icon(Icons.place, color: Colors.blue)],
+                  text: 'Sua localização'),
+              IconText(
+                  icons: [Icon(Icons.search)],
+                  text: 'Ferramenta de busca de local'),
+              IconText(
+                  icons: [Icon(Icons.my_location)],
+                  text: 'Botão para retornar à sua localização'),
             ],
           ),
         ),

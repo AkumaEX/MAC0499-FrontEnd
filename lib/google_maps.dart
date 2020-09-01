@@ -17,9 +17,9 @@ class _GoogleMapsState extends State<GoogleMaps> {
   double iconSize = 40;
   Set<Circle> circles = Set<Circle>();
   Future<LatLng> location;
+  LatLng coordinates;
   StreamSubscription<Position> positionStream;
   Map clusterData;
-  LatLng coordinates;
   GoogleMapController mapController;
   Color bgColor = Colors.black54.withOpacity(0.5);
   AppBar appBar;
