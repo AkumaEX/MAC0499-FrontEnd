@@ -3,11 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:e_roubo/dialogs.dart';
 
-double edgeSize = 20;
-double circleRadius = 30;
-Color bgColor = Colors.black54.withOpacity(0.5);
-
 Stack showLoadingScreen() {
+  double fontSize = 20;
   return Stack(
     children: [
       Container(color: Colors.black87),
@@ -44,12 +41,13 @@ Circle newCircle(BuildContext context, String date, String time,
   return Circle(
     circleId: CircleId('$latitude$longitude'),
     center: LatLng(latitude, longitude),
-    radius: circleRadius,
+    radius: 30,
     strokeWidth: 3,
     strokeColor: Colors.red,
     fillColor: Colors.black.withOpacity(getOpacityFromTime(time)),
     consumeTapEvents: true,
-    onTap: () => showDateAndTimeDialog(context, date, time),
+    onTap: () =>
+        showDialog(context: context, child: CircleInfo(date: date, time: time)),
   );
 }
 

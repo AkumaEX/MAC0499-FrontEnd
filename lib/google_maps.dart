@@ -57,10 +57,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
                   ),
                   onMapCreated: (controller) {
                     mapController = controller;
-                    positionStream = startTracking(coordinates, mapController);
+                    positionStream = startTracking(mapController);
                     appBar = showAppBar(context, mapController);
-                    floatingActionButton = showFloatingActionButton(
-                        positionStream, coordinates, mapController);
+                    floatingActionButton =
+                        showFloatingActionButton(positionStream, mapController);
                   },
                   onCameraMoveStarted: () => positionStream.cancel(),
                   onCameraMove: (position) => coordinates = position.target,

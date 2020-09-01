@@ -2,18 +2,15 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-int distance = 10;
-double distRadius = 300;
-
-StreamSubscription<Position> startTracking(
-    LatLng coordinates, GoogleMapController controller) {
+StreamSubscription<Position> startTracking(GoogleMapController controller) {
+  int distance = 10;
   var locationOptions = LocationOptions(
       accuracy: LocationAccuracy.bestForNavigation, distanceFilter: distance);
   return Geolocator()
       .getPositionStream(locationOptions)
       .listen((Position position) {
-    coordinates = LatLng(position.latitude, position.longitude);
-    controller.animateCamera(CameraUpdate.newLatLng(coordinates));
+    controller.animateCamera(
+        CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)));
   });
 }
 
@@ -29,6 +26,7 @@ Future<LatLng> getLocation() async {
 }
 
 Future<bool> checkDistance(LatLng coordinates, Set<Circle> circles) async {
+  double distRadius = 300;
   for (Circle circle in circles) {
     double distance = await Geolocator().distanceBetween(coordinates.latitude,
         coordinates.longitude, circle.center.latitude, circle.center.longitude);

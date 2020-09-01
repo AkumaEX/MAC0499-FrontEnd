@@ -9,40 +9,40 @@ import 'package:e_roubo/helpers.dart';
 import 'package:e_roubo/dialogs.dart';
 import 'package:e_roubo/text_helpers.dart';
 
-double fontSize = 20;
-Color bgColor = Colors.black54.withOpacity(0.5);
-String endPoint = 'http://104.155.175.253/ml/api';
-
 AppBar showAppBar(BuildContext context, GoogleMapController controller) {
+  Color bgColor = Colors.black54.withOpacity(0.5);
+  double fontSize = 20;
   return AppBar(
     title: Text('eRoubo', style: GoogleFonts.righteous(fontSize: fontSize)),
     centerTitle: true,
     backgroundColor: bgColor,
     actions: [
       IconButton(
-        icon: Icon(Icons.search),
-        onPressed: () => showSearchDialog(context, controller),
-      ),
+          icon: Icon(Icons.search),
+          onPressed: () => showDialog(
+              context: context, child: SearchDialog(controller: controller))),
       IconButton(
         icon: Icon(Icons.more_vert),
-        onPressed: () => showPopupMenu(context),
+        onPressed: () => showDialog(context: context, child: MenuDialog()),
       )
     ],
   );
 }
 
-FloatingActionButton showFloatingActionButton(StreamSubscription positionStream,
-    LatLng coordinates, GoogleMapController controller) {
+FloatingActionButton showFloatingActionButton(
+    StreamSubscription positionStream, GoogleMapController controller) {
+  Color bgColor = Colors.black54.withOpacity(0.5);
   return FloatingActionButton(
       child: Icon(Icons.my_location),
       backgroundColor: bgColor,
       onPressed: () {
         positionStream.cancel();
-        positionStream = startTracking(coordinates, controller);
+        positionStream = startTracking(controller);
       });
 }
 
 Future<Map> getClusterData(LatLng location) async {
+  String endPoint = 'http://104.155.175.253/ml/api';
   try {
     String url =
         '$endPoint?latitude=${location.latitude}&longitude=${location.longitude}';
@@ -57,9 +57,9 @@ Future getInfo(
     BuildContext context, LatLng coordinates, Set<Circle> circles) async {
   Map data = await getClusterData(coordinates);
   if (data.isNotEmpty) {
-    data['geo'].forEach((info) {
+    for (var info in data['geo']) {
       circles.add(newCircle(context, info[0], info[1], info[2], info[3]));
-    });
+    }
     return data['hotspot'];
   }
   return null;
@@ -76,6 +76,7 @@ void showSnackBar(BuildContext context, LatLng coordinates, Set<Circle> circles,
 
 SnackBar snackBar(bool isHotspot, bool isNear) {
   double iconSize = 40;
+  Color bgColor = Colors.black54.withOpacity(0.5);
   return SnackBar(
       backgroundColor: bgColor,
       duration: Duration(days: 30),
