@@ -14,8 +14,8 @@ Future showDateAndTimeDialog(BuildContext context, String date, String time) {
         contentPadding:
             EdgeInsets.symmetric(vertical: edgeSize, horizontal: 2 * edgeSize),
         children: [
-          IconText(icons: [Icon(Icons.event)], text: '$date'),
-          IconText(icons: [Icon(Icons.schedule)], text: '$time')
+          IconTextH(icons: [Icon(Icons.event)], text: '$date'),
+          IconTextH(icons: [Icon(Icons.schedule)], text: '$time')
         ],
       ));
 }
@@ -61,10 +61,10 @@ Future showPopupMenu(BuildContext context) {
         children: [
           SimpleDialogOption(
               onPressed: () => showInstructions(context),
-              child: IconText(icons: [Icon(Icons.help)], text: 'Instruções')),
+              child: IconTextH(icons: [Icon(Icons.help)], text: 'Instruções')),
           SimpleDialogOption(
               onPressed: () => showMoreInfo(context),
-              child: IconText(icons: [Icon(Icons.info)], text: 'Sobre'))
+              child: IconTextH(icons: [Icon(Icons.info)], text: 'Sobre'))
         ],
       ));
 }
@@ -80,38 +80,38 @@ Future showInstructions(BuildContext context) {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              IconText(
+              IconTextH(
                   text:
                       'Cada roubo é representado por um círculo vermelho no mapa. A tonalidade interna representa a proximidade com o seu horário:'),
-              IconText(icons: [
+              IconTextH(icons: [
                 Icon(Icons.lens, color: Colors.white),
                 Icon(Icons.panorama_fish_eye, color: Colors.red)
               ], text: 'Roubo ocorrido em um horário muito distante'),
-              IconText(icons: [
+              IconTextH(icons: [
                 Icon(Icons.lens, color: Colors.grey),
                 Icon(Icons.panorama_fish_eye, color: Colors.red)
               ], text: 'Roubo ocorrido em um horário distante'),
-              IconText(icons: [
+              IconTextH(icons: [
                 Icon(Icons.lens, color: Colors.black),
                 Icon(Icons.panorama_fish_eye, color: Colors.red)
               ], text: 'Roubo ocorrido em um horário próximo'),
-              IconText(text: 'Alertas aparecem na parte de baixo da tela:'),
-              IconText(
+              IconTextH(text: 'Alertas aparecem na parte de baixo da tela:'),
+              IconTextH(
                   icons: [Icon(Icons.warning, color: Colors.yellow)],
                   text: 'Atenção ao uso do celular'),
-              IconText(
+              IconTextH(
                   icons: [Icon(Icons.warning, color: Colors.red)],
                   text: 'Evite o uso do celular'),
-              IconText(
+              IconTextH(
                   text:
                       'Os dados são apresentados de acordo com a sua localização. Arraste a tela para pesquisar ao redor.'),
-              IconText(
+              IconTextH(
                   icons: [Icon(Icons.place, color: Colors.blue)],
                   text: 'Sua localização'),
-              IconText(
+              IconTextH(
                   icons: [Icon(Icons.search)],
                   text: 'Ferramenta de busca de local'),
-              IconText(
+              IconTextH(
                   icons: [Icon(Icons.my_location)],
                   text: 'Botão para retornar à sua localização'),
             ],
