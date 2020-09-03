@@ -29,18 +29,6 @@ AppBar showAppBar(BuildContext context, GoogleMapController controller) {
   );
 }
 
-FloatingActionButton showFloatingActionButton(
-    StreamSubscription positionStream, GoogleMapController controller) {
-  Color bgColor = Colors.black54.withOpacity(0.5);
-  return FloatingActionButton(
-      child: Icon(Icons.my_location),
-      backgroundColor: bgColor,
-      onPressed: () {
-        positionStream.cancel();
-        positionStream = startTracking(controller);
-      });
-}
-
 Future<Map> getClusterData(LatLng location) async {
   String endPoint = 'http://104.155.175.253/ml/api';
   try {
@@ -57,9 +45,11 @@ Future getInfo(
     BuildContext context, LatLng coordinates, Set<Circle> circles) async {
   Map data = await getClusterData(coordinates);
   if (data.isNotEmpty) {
+    Set<Circle> newCircles = Set<Circle>();
     for (var info in data['geo']) {
-      circles.add(newCircle(context, info[0], info[1], info[2], info[3]));
+      newCircles.add(newCircle(context, info[0], info[1], info[2], info[3]));
     }
+    circles.addAll(newCircles);
     return data['hotspot'];
   }
   return null;

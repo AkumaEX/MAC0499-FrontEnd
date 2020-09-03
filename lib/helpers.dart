@@ -1,7 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:e_roubo/dialogs.dart';
+
+SpinKitCubeGrid showCubeGrid() {
+  return SpinKitCubeGrid(
+    duration: Duration(seconds: 3),
+    color: Colors.white,
+  );
+}
+
+SpinKitRipple showRipple() {
+  return SpinKitRipple(
+    duration: Duration(seconds: 3),
+    size: 500,
+    color: Colors.white,
+  );
+}
+
+SpinKitDualRing showDualRing() {
+  return SpinKitDualRing(
+    duration: Duration(seconds: 3),
+    lineWidth: 3,
+    color: Colors.blue,
+  );
+}
 
 Stack showLoadingScreen() {
   double fontSize = 20;
@@ -28,7 +52,7 @@ Stack showLoadingScreen() {
             SizedBox(
               height: 100,
             ),
-            CircularProgressIndicator(),
+            showCubeGrid(),
           ],
         ),
       )

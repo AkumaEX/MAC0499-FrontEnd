@@ -6,12 +6,15 @@ StreamSubscription<Position> startTracking(GoogleMapController controller) {
   int distance = 10;
   var locationOptions = LocationOptions(
       accuracy: LocationAccuracy.bestForNavigation, distanceFilter: distance);
-  return Geolocator()
-      .getPositionStream(locationOptions)
-      .listen((Position position) {
-    controller.animateCamera(
-        CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)));
-  });
+  return Geolocator().getPositionStream(locationOptions).listen(
+        (Position position) => moveCameraTo(
+            LatLng(position.latitude, position.longitude), controller));
+}
+
+void moveCameraTo(LatLng target, GoogleMapController controller) {
+  controller.animateCamera(
+    CameraUpdate.newLatLng(target),
+  );
 }
 
 Future<LatLng> getLocation() async {

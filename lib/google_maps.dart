@@ -1,34 +1,45 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'dart:async';
+import 'package:e_roubo/helpers.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:e_roubo/helpers.dart';
 import 'package:e_roubo/scaffold_contents.dart';
 import 'package:e_roubo/geolocator_contents.dart';
 
 class GoogleMaps extends StatefulWidget {
+  GoogleMaps(this.coordinates);
+
+  final LatLng coordinates;
+
   @override
   _GoogleMapsState createState() => _GoogleMapsState();
 }
 
-class _GoogleMapsState extends State<GoogleMaps> {
-  double defaultZoom = 15;
-  double iconSize = 40;
-  Set<Circle> circles = Set<Circle>();
-  Future<LatLng> location;
+class _GoogleMapsState extends State<GoogleMaps> with TickerProviderStateMixin {
+  bool isHotspot;
+  bool isLoading;
+  bool isTracking;
+  double iconSize;
+  double zoomLevel;
+  Set<Circle> circles;
+  Color bgColor;
   LatLng coordinates;
   StreamSubscription<Position> positionStream;
   Map clusterData;
   GoogleMapController mapController;
-  Color bgColor = Colors.black54.withOpacity(0.5);
   AppBar appBar;
   FloatingActionButton floatingActionButton;
-  bool isHotspot;
 
   @override
   void initState() {
-    location = getLocation();
+    isLoading = false;
+    isTracking = false;
+    iconSize = 40;
+    zoomLevel = 15;
+    circles = Set<Circle>();
+    bgColor = Colors.black54.withOpacity(0.5);
+    coordinates = widget.coordinates;
     super.initState();
   }
 
@@ -37,52 +48,58 @@ class _GoogleMapsState extends State<GoogleMaps> {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       extendBodyBehindAppBar: true,
-      appBar: appBar,
-      body: FutureBuilder(
-        future: location,
-        builder: (context, snapshot) {
-          Widget child;
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-              child = showLoadingScreen();
-              break;
-            default:
-              coordinates = snapshot.data;
-              child = Stack(children: <Widget>[
-                GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: coordinates,
-                    zoom: defaultZoom,
-                  ),
-                  onMapCreated: (controller) {
-                    mapController = controller;
-                    positionStream = startTracking(mapController);
-                    appBar = showAppBar(context, mapController);
-                    floatingActionButton =
-                        showFloatingActionButton(positionStream, mapController);
-                  },
-                  onCameraMoveStarted: () => positionStream.cancel(),
-                  onCameraMove: (position) => coordinates = position.target,
-                  onCameraIdle: () async {
-                    isHotspot = await getInfo(context, coordinates, circles);
-                    setState(() {});
-                    showSnackBar(context, coordinates, circles, isHotspot);
-                  },
-                  circles: circles,
-                  zoomControlsEnabled: false,
-                  rotateGesturesEnabled: false,
-                ),
-                Align(
-                  alignment: Alignment.center,
-                  child: Icon(Icons.place, size: iconSize, color: Colors.blue),
-                )
-              ]);
-          }
-          return AnimatedSwitcher(duration: Duration(seconds: 3), child: child);
+      appBar: showAppBar(context, mapController),
+      body: Builder(
+        builder: (context) => Stack(
+          fit: StackFit.expand,
+          alignment: Alignment.center,
+          children: <Widget>[
+            GoogleMap(
+              initialCameraPosition:
+                  CameraPosition(target: coordinates, zoom: zoomLevel),
+              onMapCreated: (controller) {
+                mapController = controller;
+                positionStream = startTracking(mapController);
+              },
+              onTap: (point) => moveCameraTo(point, mapController),
+              onLongPress: (_) => positionStream.cancel(),
+              onCameraMoveStarted: () {
+                setState(() {
+                  isLoading = true;
+                });
+              },
+              onCameraMove: (position) => coordinates = position.target,
+              onCameraIdle: () async {
+                isHotspot = await getInfo(context, coordinates, circles);
+                showSnackBar(context, coordinates, circles, isHotspot);
+                setState(() {
+                  isLoading = false;
+                  isTracking = false;
+                });
+              },
+              circles: circles,
+              zoomControlsEnabled: false,
+              rotateGesturesEnabled: false,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+            ),
+            Icon(Icons.location_searching, size: iconSize, color: Colors.blue),
+            if (isLoading) showRipple(),
+            if (isTracking) showDualRing(),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: bgColor,
+        child: Icon(Icons.my_location),
+        onPressed: () {
+          positionStream.cancel();
+          setState(() {
+            isTracking = true;
+          });
+          positionStream = startTracking(mapController);
         },
       ),
-      floatingActionButton: floatingActionButton,
     );
   }
 }
