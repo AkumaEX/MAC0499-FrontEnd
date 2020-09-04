@@ -46,6 +46,7 @@ class _GoogleMapsState extends State<GoogleMaps> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: Key('google_maps'),
       resizeToAvoidBottomPadding: false,
       extendBodyBehindAppBar: true,
       appBar: showAppBar(context, mapController),

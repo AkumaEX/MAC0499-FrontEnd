@@ -108,3 +108,9 @@ Duration getTimeDiffFromNow(hour, minute) {
     }
   }
 }
+
+void moveCameraTo(LatLng target, GoogleMapController controller) {
+  controller.animateCamera(
+    CameraUpdate.newLatLng(target),
+  );
+}

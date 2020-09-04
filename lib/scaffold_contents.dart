@@ -59,30 +59,41 @@ void showSnackBar(BuildContext context, LatLng coordinates, Set<Circle> circles,
     isHotspot) async {
   bool isNear = await checkDistance(coordinates, circles);
   Scaffold.of(context).hideCurrentSnackBar();
-  if (isHotspot == null || isHotspot || isNear) {
-    Scaffold.of(context).showSnackBar(snackBar(isHotspot, isNear));
-  }
+  Scaffold.of(context).showSnackBar(snackBar(isHotspot, isNear));
 }
 
 SnackBar snackBar(bool isHotspot, bool isNear) {
-  double iconSize = 40;
-  Color bgColor = Colors.black54.withOpacity(0.5);
   return SnackBar(
-      backgroundColor: bgColor,
-      duration: Duration(days: 30),
-      content: (isHotspot == null)
-          ? IconTextV(icons: [
-              Icon(Icons.sync_problem, color: Colors.blue, size: iconSize)
-            ], text: 'Servidor fora do ar. Tente novamente mais tarde')
-          : (isHotspot && isNear)
-              ? IconTextV(icons: [
-                  Icon(Icons.warning, color: Colors.red, size: iconSize)
-                ], text: 'Área de risco e próximo a um local de crime')
-              : (isHotspot)
-                  ? IconTextV(icons: [
-                      Icon(Icons.warning, color: Colors.yellow, size: iconSize)
-                    ], text: 'Área de risco')
-                  : IconTextV(icons: [
-                      Icon(Icons.warning, color: Colors.yellow, size: iconSize)
-                    ], text: 'Próximo a um local de crime'));
+    backgroundColor: Colors.black54.withOpacity(0.5),
+    duration: Duration(days: 30),
+    content: snackBarMessage(isHotspot, isNear),
+  );
+}
+
+IconTextV snackBarMessage(bool isHotspot, bool isNear) {
+  double iconSize = 40;
+  if (isHotspot == null) {
+    return IconTextV(
+        icons: [Icon(Icons.sync_problem, color: Colors.blue, size: iconSize)],
+        text: 'Problemas com a obtenção de dados. Verifique sua conexão');
+  } else if (isHotspot && isNear) {
+    return IconTextV(
+        icons: [Icon(Icons.warning, color: Colors.red, size: iconSize)],
+        text:
+            'Previsão de roubos acima do normal nesta área, e próximo a um roubo recente');
+  } else if (isHotspot && !isNear) {
+    return IconTextV(
+        icons: [Icon(Icons.warning, color: Colors.yellow, size: iconSize)],
+        text:
+            'Previsão de roubos acima do normal nesta área, mas longe da área de risco');
+  } else if (!isHotspot && isNear) {
+    return IconTextV(
+        icons: [Icon(Icons.warning, color: Colors.yellow, size: iconSize)],
+        text:
+            'Previsão de roubos abaixo do normal nesta área, mas próximo a um roubo recente');
+  } else {
+    return IconTextV(
+        icons: [Icon(Icons.check_circle, color: Colors.green, size: iconSize)],
+        text: 'Previsão de roubos abaixo do normal nesta área');
+  }
 }

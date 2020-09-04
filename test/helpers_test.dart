@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:test/test.dart';
+import 'package:flutter/material.dart';
 import 'package:e_roubo/helpers.dart';
 import 'package:flutter_test/flutter_test.dart' as flutter_test;
 import 'package:google_maps_flutter/google_maps_flutter.dart';

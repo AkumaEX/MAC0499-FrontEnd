@@ -1,7 +1,8 @@
-import 'package:e_roubo/text_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:e_roubo/text_helpers.dart';
+import 'package:e_roubo/helpers.dart';
 
 class CircleInfo extends StatelessWidget {
   CircleInfo({this.date, this.time});
@@ -44,13 +45,13 @@ class SearchDialog extends StatelessWidget {
           onEditingComplete: () => Navigator.pop(context),
           onSubmitted: (address) async {
             try {
-              List<Placemark> placemarks =
-                  await Geolocator().placemarkFromAddress(address);
-              if (placemarks.isNotEmpty) {
-                Position position = placemarks.first.position;
-                LatLng coordinates =
-                    LatLng(position.latitude, position.longitude);
-                controller.animateCamera(CameraUpdate.newLatLng(coordinates));
+              if (address.isNotEmpty) {
+                List<Location> locations = await locationFromAddress(address);
+                if (locations.isNotEmpty) {
+                  LatLng target = LatLng(
+                      locations.first.latitude, locations.first.longitude);
+                  moveCameraTo(target, controller);
+                }
               }
             } catch (e) {}
           },

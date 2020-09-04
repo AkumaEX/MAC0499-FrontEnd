@@ -1,8 +1,8 @@
-import 'package:e_roubo/google_maps.dart';
 import 'package:e_roubo/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:e_roubo/geolocator_contents.dart';
+import 'package:e_roubo/google_maps.dart';
 
 void main() {
   runApp(ERoubo());
@@ -30,23 +30,27 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-
   @override
   void initState() {
     super.initState();
-    getLocation().then((location) => Navigator.of(context).pushReplacement(transition(location)));
+    getLocation().then((location) =>
+        Navigator.of(context).pushReplacement(transition(location)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: showLoadingScreen());
+    return Scaffold(
+      key: Key('loading_screen'),
+      body: showLoadingScreen(),
+    );
   }
 }
 
 Route transition(LatLng coordinates) {
   return PageRouteBuilder(
     transitionDuration: Duration(seconds: 5),
-    pageBuilder: (context, animation, secondaryAnimation) => GoogleMaps(coordinates),
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        GoogleMaps(coordinates),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(opacity: animation, child: child);
     },
