@@ -22,23 +22,22 @@ class IconTextH extends StatelessWidget {
   }
 }
 
-class IconTextV extends StatelessWidget {
-  IconTextV({@required this.text, this.icons});
+class SnackBarTile extends StatelessWidget {
+  SnackBarTile(
+      {@required this.icon, @required this.title, @required this.description});
 
-  final List<Icon> icons;
-  final String text;
-  final double fontSize = 20;
+  final Icon icon;
+  final String title;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return ExpansionTile(
+      maintainState: true,
+      leading: icon,
+      title: Text(title, style: TextStyle(fontSize: 20, color: Colors.white)),
       children: [
-        if (icons != null) Stack(children: icons),
-        Flexible(
-            child: Text(text,
-                style: TextStyle(fontSize: fontSize),
-                textAlign: TextAlign.center))
+        Text(description, style: TextStyle(fontSize: 15, color: Colors.white))
       ],
     );
   }

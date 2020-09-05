@@ -70,30 +70,40 @@ SnackBar snackBar(bool isHotspot, bool isNear) {
   );
 }
 
-IconTextV snackBarMessage(bool isHotspot, bool isNear) {
+SnackBarTile snackBarMessage(bool isHotspot, bool isNear) {
   double iconSize = 40;
   if (isHotspot == null) {
-    return IconTextV(
-        icons: [Icon(Icons.sync_problem, color: Colors.blue, size: iconSize)],
-        text: 'Problemas com a obtenção de dados. Verifique sua conexão');
+    return SnackBarTile(
+      icon: Icon(Icons.sync_problem, color: Colors.blue, size: iconSize),
+      title: 'Sem conexão',
+      description: 'Problemas com a obtenção de dados. Verifique sua conexão',
+    );
   } else if (isHotspot && isNear) {
-    return IconTextV(
-        icons: [Icon(Icons.warning, color: Colors.red, size: iconSize)],
-        text:
-            'Previsão de roubos acima do normal nesta área, e próximo a um roubo recente');
+    return SnackBarTile(
+      icon: Icon(Icons.warning, color: Colors.red, size: iconSize),
+      title: 'Guarde o celular',
+      description:
+          'Previsão de roubos acima do normal nesta área, e próximo a um roubo recente',
+    );
   } else if (isHotspot && !isNear) {
-    return IconTextV(
-        icons: [Icon(Icons.warning, color: Colors.yellow, size: iconSize)],
-        text:
-            'Previsão de roubos acima do normal nesta área, mas longe da área de risco');
+    return SnackBarTile(
+      icon: Icon(Icons.warning, color: Colors.yellow, size: iconSize),
+      title: 'Atenção',
+      description:
+          'Previsão de roubos acima do normal nesta área, mas longe da área de risco',
+    );
   } else if (!isHotspot && isNear) {
-    return IconTextV(
-        icons: [Icon(Icons.warning, color: Colors.yellow, size: iconSize)],
-        text:
-            'Previsão de roubos abaixo do normal nesta área, mas próximo a um roubo recente');
+    return SnackBarTile(
+      icon: Icon(Icons.warning, color: Colors.yellow, size: iconSize),
+      title: 'Área de Risco',
+      description:
+          'Previsão de roubos abaixo do normal nesta área, mas próximo a um roubo recente',
+    );
   } else {
-    return IconTextV(
-        icons: [Icon(Icons.check_circle, color: Colors.green, size: iconSize)],
-        text: 'Previsão de roubos abaixo do normal nesta área');
+    return SnackBarTile(
+      icon: Icon(Icons.check_circle, color: Colors.green, size: iconSize),
+      title: 'Seguro',
+      description: 'Previsão de roubos abaixo do normal nesta área',
+    );
   }
 }
