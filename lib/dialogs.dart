@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:e_roubo/text_helpers.dart';
 import 'package:e_roubo/helpers.dart';
 
 class CircleInfo extends StatelessWidget {
@@ -9,17 +8,27 @@ class CircleInfo extends StatelessWidget {
 
   final String date;
   final String time;
-  final double edgeSize = 20;
+  final double verticalEdge = 20;
+  final double horizontalEdge = 30;
+  final double fontSize = 20;
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
       title: Text('Informação do Roubo', textAlign: TextAlign.center),
-      contentPadding:
-          EdgeInsets.symmetric(vertical: edgeSize, horizontal: 2 * edgeSize),
+      contentPadding: EdgeInsets.symmetric(
+          vertical: verticalEdge, horizontal: horizontalEdge),
       children: [
-        IconTextH(icons: [Icon(Icons.event)], text: '$date'),
-        IconTextH(icons: [Icon(Icons.schedule)], text: '$time')
+        ListTile(
+          leading: Icon(Icons.event),
+          title: Text('Data', style: TextStyle(fontSize: fontSize)),
+          subtitle: Text(date, style: TextStyle(fontSize: fontSize)),
+        ),
+        ListTile(
+          leading: Icon(Icons.schedule),
+          title: Text('Horário', style: TextStyle(fontSize: fontSize)),
+          subtitle: Text(time, style: TextStyle(fontSize: fontSize)),
+        )
       ],
     );
   }
@@ -62,21 +71,27 @@ class SearchDialog extends StatelessWidget {
 }
 
 class MenuDialog extends StatelessWidget {
-  final double edgeSize = 20;
+  final double verticalEdge = 20;
+  final double horizontalEdge = 30;
+  final double fontSize = 20;
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
       title: Text('Menu', textAlign: TextAlign.center),
-      contentPadding: EdgeInsets.all(edgeSize),
+      contentPadding: EdgeInsets.symmetric(
+          vertical: verticalEdge, horizontal: horizontalEdge),
       children: [
-        SimpleDialogOption(
-            onPressed: () =>
-                showDialog(context: context, child: Instructions()),
-            child: IconTextH(icons: [Icon(Icons.help)], text: 'Instruções')),
-        SimpleDialogOption(
-            onPressed: () => showMoreInfo(context),
-            child: IconTextH(icons: [Icon(Icons.info)], text: 'Sobre'))
+        ListTile(
+          leading: Icon(Icons.help),
+          title: Text('Instruções', style: TextStyle(fontSize: fontSize)),
+          onTap: () => showDialog(context: context, child: Instructions()),
+        ),
+        ListTile(
+          leading: Icon(Icons.info),
+          title: Text('Sobre', style: TextStyle(fontSize: fontSize)),
+          onTap: () => showMoreInfo(context),
+        ),
       ],
     );
   }
@@ -84,58 +99,99 @@ class MenuDialog extends StatelessWidget {
 
 class Instructions extends StatelessWidget {
   final double edgeSize = 20;
-  final double fontSize = 20;
+  final double fontSize = 17;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Instruções', textAlign: TextAlign.center),
-      contentPadding: EdgeInsets.all(edgeSize),
-      contentTextStyle: TextStyle(fontSize: fontSize, color: Colors.black),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconTextH(
-                text:
-                    'Cada roubo é representado por um círculo vermelho no mapa. A tonalidade interna representa a proximidade com o seu horário:'),
-            IconTextH(icons: [
+      scrollable: true,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            title: Text(
+                'Cada roubo é representado por um círculo vermelho no mapa. A tonalidade interna representa a proximidade com o seu horário:',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+            leading: Stack(children: [
               Icon(Icons.lens, color: Colors.white),
               Icon(Icons.panorama_fish_eye, color: Colors.red)
-            ], text: 'Roubo ocorrido em um horário muito distante'),
-            IconTextH(icons: [
+            ]),
+            title: Text('Roubo ocorrido em um horário muito distante',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+            leading: Stack(children: [
               Icon(Icons.lens, color: Colors.grey),
               Icon(Icons.panorama_fish_eye, color: Colors.red)
-            ], text: 'Roubo ocorrido em um horário distante'),
-            IconTextH(icons: [
+            ]),
+            title: Text('Roubo ocorrido em um horário distante',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+            leading: Stack(children: [
               Icon(Icons.lens, color: Colors.black),
               Icon(Icons.panorama_fish_eye, color: Colors.red)
-            ], text: 'Roubo ocorrido em um horário próximo'),
-            IconTextH(text: 'Alertas aparecem na parte de baixo da tela:'),
-            IconTextH(
-                icons: [Icon(Icons.warning, color: Colors.yellow)],
-                text: 'Atenção ao uso do celular'),
-            IconTextH(
-                icons: [Icon(Icons.warning, color: Colors.red)],
-                text: 'Evite o uso do celular'),
-            IconTextH(
-                text:
-                    'Os dados são apresentados de acordo com a sua localização. Arraste a tela para pesquisar ao redor.'),
-            IconTextH(
-                icons: [Icon(Icons.place, color: Colors.blue)],
-                text: 'Sua localização'),
-            IconTextH(
-                icons: [Icon(Icons.search)],
-                text: 'Ferramenta de busca de local'),
-            IconTextH(
-                icons: [Icon(Icons.my_location)],
-                text: 'Botão para retornar à sua localização'),
-          ],
-        ),
+            ]),
+            title: Text('Roubo ocorrido em um horário próximo',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+            title: Text('Alertas aparecem na parte de baixo da tela:',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+              leading: Icon(Icons.check_circle, color: Colors.green),
+              title: Text('Aparentemente seguro',
+                  style: TextStyle(fontSize: fontSize))),
+          ListTile(
+            leading: Icon(Icons.warning, color: Colors.yellow),
+            title: Text('Atenção ao uso do celular',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+            leading: Icon(Icons.pan_tool, color: Colors.red),
+            title: Text('Evite o uso do celular',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+            title: Text(
+                'Os dados são apresentados de acordo com a sua localização. Arraste a tela para pesquisar ao redor.',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+            leading: Stack(
+              children: [
+                Icon(Icons.arrow_drop_up, color: Colors.blue),
+                Padding(
+                    padding: EdgeInsets.only(top: 15, left: 2),
+                    child: Icon(Icons.fiber_manual_record,
+                        size: 20, color: Colors.blue))
+              ],
+            ),
+            title:
+                Text('Sua localização', style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+              leading: Icon(Icons.location_searching, color: Colors.blue),
+              title: Text('Local de busca de dados',
+                  style: TextStyle(fontSize: fontSize))),
+          ListTile(
+            leading: Icon(Icons.search),
+            title: Text('Ferramenta de busca de local',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+          ListTile(
+            leading: Icon(Icons.my_location),
+            title: Text('Botão para retornar à sua localização',
+                style: TextStyle(fontSize: fontSize)),
+          ),
+        ],
       ),
       actions: [
         FlatButton(
-          padding: EdgeInsets.only(right: edgeSize, bottom: edgeSize),
           child: Text('OK', style: TextStyle(fontSize: fontSize)),
           onPressed: () {
             Navigator.of(context).pop();

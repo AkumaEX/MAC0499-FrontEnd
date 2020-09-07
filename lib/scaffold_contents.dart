@@ -7,7 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:e_roubo/geolocator_contents.dart';
 import 'package:e_roubo/helpers.dart';
 import 'package:e_roubo/dialogs.dart';
-import 'package:e_roubo/text_helpers.dart';
+import 'package:e_roubo/snackbar_tile.dart';
 
 AppBar showAppBar(BuildContext context, GoogleMapController controller) {
   Color bgColor = Colors.black54.withOpacity(0.5);
@@ -57,53 +57,16 @@ Future getInfo(
 
 void showSnackBar(BuildContext context, LatLng coordinates, Set<Circle> circles,
     isHotspot) async {
-  bool isNear = await checkDistance(coordinates, circles);
   Scaffold.of(context).hideCurrentSnackBar();
-  Scaffold.of(context).showSnackBar(snackBar(isHotspot, isNear));
+  bool isNear = await checkDistance(coordinates, circles);
+  SnackBar newSnackBar = getSnackBar(isHotspot, isNear);
+  Scaffold.of(context).showSnackBar(newSnackBar);
 }
 
-SnackBar snackBar(bool isHotspot, bool isNear) {
+SnackBar getSnackBar(bool isHotspot, bool isNear) {
   return SnackBar(
     backgroundColor: Colors.black54.withOpacity(0.5),
     duration: Duration(days: 30),
-    content: snackBarMessage(isHotspot, isNear),
+    content: SnackBarTile(isHotspot: isHotspot, isNear: isNear),
   );
-}
-
-SnackBarTile snackBarMessage(bool isHotspot, bool isNear) {
-  double iconSize = 40;
-  if (isHotspot == null) {
-    return SnackBarTile(
-      icon: Icon(Icons.sync_problem, color: Colors.blue, size: iconSize),
-      title: 'Sem conexão',
-      description: 'Problemas com a obtenção de dados. Verifique sua conexão',
-    );
-  } else if (isHotspot && isNear) {
-    return SnackBarTile(
-      icon: Icon(Icons.warning, color: Colors.red, size: iconSize),
-      title: 'Guarde o celular',
-      description:
-          'Previsão de roubos acima do normal nesta área, e próximo a um roubo recente',
-    );
-  } else if (isHotspot && !isNear) {
-    return SnackBarTile(
-      icon: Icon(Icons.warning, color: Colors.yellow, size: iconSize),
-      title: 'Atenção',
-      description:
-          'Previsão de roubos acima do normal nesta área, mas longe da área de risco',
-    );
-  } else if (!isHotspot && isNear) {
-    return SnackBarTile(
-      icon: Icon(Icons.warning, color: Colors.yellow, size: iconSize),
-      title: 'Área de Risco',
-      description:
-          'Previsão de roubos abaixo do normal nesta área, mas próximo a um roubo recente',
-    );
-  } else {
-    return SnackBarTile(
-      icon: Icon(Icons.check_circle, color: Colors.green, size: iconSize),
-      title: 'Seguro',
-      description: 'Previsão de roubos abaixo do normal nesta área',
-    );
-  }
 }

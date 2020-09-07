@@ -26,10 +26,7 @@ class _GoogleMapsState extends State<GoogleMaps> with TickerProviderStateMixin {
   Color bgColor;
   LatLng coordinates;
   StreamSubscription<Position> positionStream;
-  Map clusterData;
   GoogleMapController mapController;
-  AppBar appBar;
-  FloatingActionButton floatingActionButton;
 
   @override
   void initState() {
