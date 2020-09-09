@@ -17,12 +17,11 @@ class SnackBarTile extends StatelessWidget {
       title: Text(getTitle(isHotspot, isNear),
           style: TextStyle(fontSize: largeFont, color: Colors.white)),
       children: [
-        if (isHotspot != null)
-          ListTile(
-            leading: getHotspotIcon(isHotspot),
-            title: Text(getHotspotText(isHotspot),
-                style: TextStyle(fontSize: smallFont, color: Colors.white)),
-          ),
+        ListTile(
+          leading: getHotspotIcon(isHotspot),
+          title: Text(getHotspotText(isHotspot),
+              style: TextStyle(fontSize: smallFont, color: Colors.white)),
+        ),
         if (isHotspot != null)
           ListTile(
             leading: getIsNearIcon(isNear),
@@ -50,7 +49,10 @@ class SnackBarTile extends StatelessWidget {
   }
 
   Icon getHotspotIcon(bool isHotspot) {
-    if (isHotspot) {
+    if (isHotspot == null) {
+      return Icon(Icons.signal_cellular_alt,
+          size: smallIcon, color: Colors.blue);
+    } else if (isHotspot) {
       return Icon(Icons.trending_up, size: smallIcon, color: Colors.red);
     } else {
       return Icon(Icons.trending_down, size: smallIcon, color: Colors.green);
@@ -73,14 +75,16 @@ class SnackBarTile extends StatelessWidget {
     } else if (isHotspot && !isNear) {
       return 'Região potencialmente perigoso';
     } else if (!isHotspot && isNear) {
-      return 'Área de risco, use com atenção';
+      return 'Região de roubo anterior';
     } else {
       return 'Aparentemente seguro';
     }
   }
 
   String getHotspotText(bool isHotspot) {
-    if (isHotspot) {
+    if (isHotspot == null) {
+      return 'Verifique a sua conexão com a Internet. Se o problema persistir, tente novamente mais tarde';
+    } else if (isHotspot) {
       return 'Previsão de alto número de roubos nesta região';
     } else {
       return 'Previsão de baixo número de roubos nesta região';
