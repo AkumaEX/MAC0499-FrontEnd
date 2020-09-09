@@ -26,7 +26,7 @@ void main() {
       await setUp(tester);
       await tester.tap(find.byType(Text));
       await tester.pump();
-      Finder iconFinder = find.byIcon(Icons.signal_cellular_alt);
+      Finder iconFinder = find.byIcon(Icons.signal_cellular_off);
       Finder textFinder = find.text(
           'Verifique a sua conexão com a Internet. Se o problema persistir, tente novamente mais tarde');
       expect(iconFinder, findsOneWidget);

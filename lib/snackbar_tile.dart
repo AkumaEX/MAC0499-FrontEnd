@@ -50,7 +50,7 @@ class SnackBarTile extends StatelessWidget {
 
   Icon getHotspotIcon(bool isHotspot) {
     if (isHotspot == null) {
-      return Icon(Icons.signal_cellular_alt,
+      return Icon(Icons.signal_cellular_off,
           size: smallIcon, color: Colors.blue);
     } else if (isHotspot) {
       return Icon(Icons.trending_up, size: smallIcon, color: Colors.red);
