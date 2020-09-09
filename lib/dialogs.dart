@@ -20,11 +20,13 @@ class CircleInfo extends StatelessWidget {
           vertical: verticalEdge, horizontal: horizontalEdge),
       children: [
         ListTile(
+          key: Key('circle_info_date'),
           leading: Icon(Icons.event),
           title: Text('Data', style: TextStyle(fontSize: fontSize)),
           subtitle: Text(date, style: TextStyle(fontSize: fontSize)),
         ),
         ListTile(
+          key: Key('circle_info_time'),
           leading: Icon(Icons.schedule),
           title: Text('Horário', style: TextStyle(fontSize: fontSize)),
           subtitle: Text(time, style: TextStyle(fontSize: fontSize)),
@@ -65,33 +67,6 @@ class SearchDialog extends StatelessWidget {
             } catch (e) {}
           },
         )
-      ],
-    );
-  }
-}
-
-class MenuDialog extends StatelessWidget {
-  final double verticalEdge = 20;
-  final double horizontalEdge = 30;
-  final double fontSize = 20;
-
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: Text('Menu', textAlign: TextAlign.center),
-      contentPadding: EdgeInsets.symmetric(
-          vertical: verticalEdge, horizontal: horizontalEdge),
-      children: [
-        ListTile(
-          leading: Icon(Icons.help),
-          title: Text('Instruções', style: TextStyle(fontSize: fontSize)),
-          onTap: () => showDialog(context: context, child: Instructions()),
-        ),
-        ListTile(
-          leading: Icon(Icons.info),
-          title: Text('Sobre', style: TextStyle(fontSize: fontSize)),
-          onTap: () => showMoreInfo(context),
-        ),
       ],
     );
   }
@@ -200,14 +175,4 @@ class Instructions extends StatelessWidget {
       ],
     );
   }
-}
-
-void showMoreInfo(BuildContext context) {
-  return showAboutDialog(
-    context: context,
-    applicationName: 'eRoubo',
-    applicationVersion: '0.1.0',
-    applicationLegalese:
-        'Desenvolvido por Julio Kenji Ueda como parte do Trabalho de Conclusão do Curso de Bacharelado em Ciência da Computação do Instituto de Matemática e Estatística da Universidade de São Paulo',
-  );
 }

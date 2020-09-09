@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -22,8 +22,8 @@ AppBar showAppBar(BuildContext context, GoogleMapController controller) {
           onPressed: () => showDialog(
               context: context, child: SearchDialog(controller: controller))),
       IconButton(
-        icon: Icon(Icons.more_vert),
-        onPressed: () => showDialog(context: context, child: MenuDialog()),
+        icon: Icon(Icons.help_outline),
+        onPressed: () => showDialog(context: context, child: Instructions()),
       )
     ],
   );
