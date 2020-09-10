@@ -37,7 +37,7 @@ class CircleInfo extends StatelessWidget {
 }
 
 class SearchDialog extends StatelessWidget {
-  SearchDialog({@required this.controller});
+  SearchDialog({this.controller});
 
   final GoogleMapController controller;
   final double edgeSize = 20;

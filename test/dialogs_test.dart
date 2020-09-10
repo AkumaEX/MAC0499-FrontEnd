@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:e_roubo/dialogs.dart';
 
 void main() {
@@ -50,6 +49,31 @@ void main() {
       expect(icon.icon, Icons.schedule);
       expect(title.data, 'Horário');
       expect(subtitle.data, '00:00');
+    });
+  });
+
+  group('SearchDialog test', () {
+    setUp(WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: SearchDialog(),
+        ),
+      ));
+    }
+
+    testWidgets('Find SimpleDialog', (WidgetTester tester) async {
+      await setUp(tester);
+      Finder dialogFinder = find.byType(SimpleDialog);
+      expect(dialogFinder, findsOneWidget);
+      SimpleDialog dialog = tester.widget(dialogFinder);
+      Text title = dialog.title;
+      expect(title.data, 'Busca');
+    });
+
+    testWidgets('Find TextField', (WidgetTester tester) async {
+      await setUp(tester);
+      Finder textFieldFinder = find.byType(TextField);
+      expect(textFieldFinder, findsOneWidget);
     });
   });
 
