@@ -27,8 +27,7 @@ void main() {
       await tester.tap(find.byType(Text));
       await tester.pump();
       Finder iconFinder = find.byIcon(Icons.signal_cellular_off);
-      Finder textFinder = find.text(
-          'Verifique a sua conexão com a Internet. Se o problema persistir, tente novamente mais tarde');
+      Finder textFinder = find.text('Verifique a sua conexão com a Internet. Se o problema persistir, tente novamente mais tarde');
       expect(iconFinder, findsOneWidget);
       expect(textFinder, findsOneWidget);
       Icon icon = tester.widget(iconFinder);
@@ -60,8 +59,7 @@ void main() {
       await tester.tap(find.byType(Text));
       await tester.pump();
       Finder iconFinder = find.byIcon(Icons.trending_up);
-      Finder textFinder =
-          find.text('Previsão de alto número de roubos nesta região');
+      Finder textFinder = find.text('Previsão de alto número de roubos nesta região');
       expect(iconFinder, findsOneWidget);
       expect(textFinder, findsOneWidget);
       Icon icon = tester.widget(iconFinder);
@@ -105,8 +103,7 @@ void main() {
       await tester.tap(find.byType(Text));
       await tester.pump();
       Finder iconFinder = find.byIcon(Icons.trending_up);
-      Finder textFinder =
-          find.text('Previsão de alto número de roubos nesta região');
+      Finder textFinder = find.text('Previsão de alto número de roubos nesta região');
       expect(iconFinder, findsOneWidget);
       expect(textFinder, findsOneWidget);
       Icon icon = tester.widget(iconFinder);
@@ -150,8 +147,7 @@ void main() {
       await tester.tap(find.byType(Text));
       await tester.pump();
       Finder iconFinder = find.byIcon(Icons.trending_down);
-      Finder textFinder =
-          find.text('Previsão de baixo número de roubos nesta região');
+      Finder textFinder = find.text('Previsão de baixo número de roubos nesta região');
       expect(iconFinder, findsOneWidget);
       expect(textFinder, findsOneWidget);
       Icon icon = tester.widget(iconFinder);
@@ -195,8 +191,7 @@ void main() {
       await tester.tap(find.byType(Text));
       await tester.pump();
       Finder iconFinder = find.byIcon(Icons.trending_down);
-      Finder textFinder =
-          find.text('Previsão de baixo número de roubos nesta região');
+      Finder textFinder = find.text('Previsão de baixo número de roubos nesta região');
       expect(iconFinder, findsOneWidget);
       expect(textFinder, findsOneWidget);
       Icon icon = tester.widget(iconFinder);

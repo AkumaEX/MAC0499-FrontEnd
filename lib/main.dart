@@ -33,8 +33,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
-    getLocation().then((location) =>
-        Navigator.of(context).pushReplacement(transition(location)));
+    getLocation().then((location) => Navigator.of(context).pushReplacement(transition(location)));
   }
 
   @override
@@ -49,8 +48,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
 Route transition(LatLng coordinates) {
   return PageRouteBuilder(
     transitionDuration: Duration(seconds: 5),
-    pageBuilder: (context, animation, secondaryAnimation) =>
-        GoogleMaps(coordinates),
+    pageBuilder: (context, animation, secondaryAnimation) => GoogleMaps(coordinates),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(opacity: animation, child: child);
     },

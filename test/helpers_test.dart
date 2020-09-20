@@ -36,20 +36,53 @@ void main() {
     expect(invalid, 0.5);
   });
 
-  flutter_test.testWidgets('Create new Circle',
-      (flutter_test.WidgetTester tester) async {
+  flutter_test.testWidgets('Create new Circle', (flutter_test.WidgetTester tester) async {
     await tester.pumpWidget(Builder(
       builder: (BuildContext context) {
-        var circle = newCircle(context, '21/01/2018', '09:00',
-            -23.5598559640699, -46.7401591295266);
+        Circle circle = newCircle(context, '21/01/2018', '09:00', -23.5598559640699, -46.7401591295266);
         expect(circle, isA<Circle>());
         expect(circle.circleId, CircleId('-23.5598559640699-46.7401591295266'));
         expect(circle.center, LatLng(-23.5598559640699, -46.7401591295266));
         expect(circle.strokeWidth, 3);
         expect(circle.strokeColor, Colors.red);
-        expect(circle.fillColor,
-            Colors.black54.withOpacity(getOpacityFromTime('09:00')));
+        expect(circle.fillColor, Colors.black54.withOpacity(getOpacityFromTime('09:00')));
         expect(circle.consumeTapEvents, true);
+        return Container();
+      },
+    ));
+  });
+
+  flutter_test.testWidgets('Create new Hotspot Polygon', (flutter_test.WidgetTester tester) async {
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        Polygon polygon = newPolygon([
+          [-23.56, -46.72],
+          [-23.57, -46.71],
+          [-23.57, -46.73]
+        ], 0, true);
+        expect(polygon, isA<Polygon>());
+        expect(polygon.polygonId, PolygonId('0'));
+        expect(polygon.points, [LatLng(-23.56, -46.72), LatLng(-23.57, -46.71), LatLng(-23.57, -46.73)]);
+        expect(polygon.strokeWidth, 1);
+        expect(polygon.fillColor, Colors.red.withOpacity(0.2));
+        return Container();
+      },
+    ));
+  });
+
+  flutter_test.testWidgets('Create new non-Hotspot Polygon', (flutter_test.WidgetTester tester) async {
+    await tester.pumpWidget(Builder(
+      builder: (BuildContext context) {
+        Polygon polygon = newPolygon([
+          [-23.56, -46.72],
+          [-23.57, -46.71],
+          [-23.57, -46.73]
+        ], 1, false);
+        expect(polygon, isA<Polygon>());
+        expect(polygon.polygonId, PolygonId('1'));
+        expect(polygon.points, [LatLng(-23.56, -46.72), LatLng(-23.57, -46.71), LatLng(-23.57, -46.73)]);
+        expect(polygon.strokeWidth, 1);
+        expect(polygon.fillColor, Colors.green.withOpacity(0.2));
         return Container();
       },
     ));

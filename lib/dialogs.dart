@@ -16,8 +16,7 @@ class CircleInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleDialog(
       title: Text('Informação do Roubo', textAlign: TextAlign.center),
-      contentPadding: EdgeInsets.symmetric(
-          vertical: verticalEdge, horizontal: horizontalEdge),
+      contentPadding: EdgeInsets.symmetric(vertical: verticalEdge, horizontal: horizontalEdge),
       children: [
         ListTile(
           key: Key('circle_info_date'),
@@ -59,8 +58,7 @@ class SearchDialog extends StatelessWidget {
               if (address.isNotEmpty) {
                 List<Location> locations = await locationFromAddress(address);
                 if (locations.isNotEmpty) {
-                  LatLng target = LatLng(
-                      locations.first.latitude, locations.first.longitude);
+                  LatLng target = LatLng(locations.first.latitude, locations.first.longitude);
                   moveCameraTo(target, controller);
                 }
               }
@@ -85,83 +83,56 @@ class Instructions extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: Text(
-                'Cada roubo é representado por um círculo vermelho no mapa. A tonalidade interna representa a proximidade com o seu horário:',
+            title: Text('Cada roubo é representado por um círculo vermelho no mapa. A tonalidade interna representa a proximidade com o seu horário:',
                 style: TextStyle(fontSize: fontSize)),
           ),
           ListTile(
-            leading: Stack(children: [
-              Icon(Icons.lens, color: Colors.white),
-              Icon(Icons.panorama_fish_eye, color: Colors.red)
-            ]),
-            title: Text('Roubo ocorrido em um horário muito distante',
-                style: TextStyle(fontSize: fontSize)),
+            leading: Stack(children: [Icon(Icons.lens, color: Colors.white), Icon(Icons.panorama_fish_eye, color: Colors.red)]),
+            title: Text('Roubo ocorrido em um horário muito distante', style: TextStyle(fontSize: fontSize)),
           ),
           ListTile(
-            leading: Stack(children: [
-              Icon(Icons.lens, color: Colors.grey),
-              Icon(Icons.panorama_fish_eye, color: Colors.red)
-            ]),
-            title: Text('Roubo ocorrido em um horário distante',
-                style: TextStyle(fontSize: fontSize)),
+            leading: Stack(children: [Icon(Icons.lens, color: Colors.grey), Icon(Icons.panorama_fish_eye, color: Colors.red)]),
+            title: Text('Roubo ocorrido em um horário distante', style: TextStyle(fontSize: fontSize)),
           ),
           ListTile(
-            leading: Stack(children: [
-              Icon(Icons.lens, color: Colors.black),
-              Icon(Icons.panorama_fish_eye, color: Colors.red)
-            ]),
-            title: Text('Roubo ocorrido em um horário próximo',
-                style: TextStyle(fontSize: fontSize)),
+            leading: Stack(children: [Icon(Icons.lens, color: Colors.black), Icon(Icons.panorama_fish_eye, color: Colors.red)]),
+            title: Text('Roubo ocorrido em um horário próximo', style: TextStyle(fontSize: fontSize)),
           ),
           ListTile(
-            title: Text('Alertas aparecem na parte de baixo da tela:',
-                style: TextStyle(fontSize: fontSize)),
+            title: Text('Alertas aparecem na parte de baixo da tela:', style: TextStyle(fontSize: fontSize)),
           ),
-          ListTile(
-              leading: Icon(Icons.check_circle, color: Colors.green),
-              title: Text('Aparentemente seguro',
-                  style: TextStyle(fontSize: fontSize))),
+          ListTile(leading: Icon(Icons.check_circle, color: Colors.green), title: Text('Aparentemente seguro', style: TextStyle(fontSize: fontSize))),
           ListTile(
             leading: Icon(Icons.warning, color: Colors.yellow),
-            title: Text('Atenção ao uso do celular',
-                style: TextStyle(fontSize: fontSize)),
+            title: Text('Atenção ao uso do celular', style: TextStyle(fontSize: fontSize)),
           ),
           ListTile(
             leading: Icon(Icons.pan_tool, color: Colors.red),
-            title: Text('Evite o uso do celular',
-                style: TextStyle(fontSize: fontSize)),
+            title: Text('Evite o uso do celular', style: TextStyle(fontSize: fontSize)),
           ),
           ListTile(
-            title: Text(
-                'Os dados são apresentados de acordo com a sua localização. Arraste a tela para pesquisar ao redor.',
+            title: Text('Os dados são apresentados de acordo com a sua localização. Arraste a tela para pesquisar ao redor.',
                 style: TextStyle(fontSize: fontSize)),
           ),
           ListTile(
             leading: Stack(
               children: [
                 Icon(Icons.arrow_drop_up, color: Colors.blue),
-                Padding(
-                    padding: EdgeInsets.only(top: 15, left: 2),
-                    child: Icon(Icons.fiber_manual_record,
-                        size: 20, color: Colors.blue))
+                Padding(padding: EdgeInsets.only(top: 15, left: 2), child: Icon(Icons.fiber_manual_record, size: 20, color: Colors.blue))
               ],
             ),
-            title:
-                Text('Sua localização', style: TextStyle(fontSize: fontSize)),
+            title: Text('Sua localização', style: TextStyle(fontSize: fontSize)),
           ),
           ListTile(
               leading: Icon(Icons.location_searching, color: Colors.blue),
-              title: Text('Local de busca de dados',
-                  style: TextStyle(fontSize: fontSize))),
+              title: Text('Local de busca de dados', style: TextStyle(fontSize: fontSize))),
           ListTile(
             leading: Icon(Icons.search),
-            title: Text('Ferramenta de busca de local',
-                style: TextStyle(fontSize: fontSize)),
+            title: Text('Ferramenta de busca de local', style: TextStyle(fontSize: fontSize)),
           ),
           ListTile(
             leading: Icon(Icons.my_location),
-            title: Text('Botão para retornar à sua localização',
-                style: TextStyle(fontSize: fontSize)),
+            title: Text('Botão para retornar à sua localização', style: TextStyle(fontSize: fontSize)),
           ),
         ],
       ),

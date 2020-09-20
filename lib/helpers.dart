@@ -39,15 +39,11 @@ Stack showLoadingScreen() {
           children: [
             FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text('eRoubo',
-                  style:
-                      GoogleFonts.righteous(fontSize: 80, color: Colors.white)),
+              child: Text('eRoubo', style: GoogleFonts.righteous(fontSize: 80, color: Colors.white)),
             ),
             FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text('Evite o Roubo de seu Celular',
-                  style: GoogleFonts.righteous(
-                      fontSize: fontSize, color: Colors.white)),
+              child: Text('Evite o Roubo de seu Celular', style: GoogleFonts.righteous(fontSize: fontSize, color: Colors.white)),
             ),
             SizedBox(
               height: 100,
@@ -60,8 +56,7 @@ Stack showLoadingScreen() {
   );
 }
 
-Circle newCircle(BuildContext context, String date, String time,
-    double latitude, double longitude) {
+Circle newCircle(BuildContext context, String date, String time, double latitude, double longitude) {
   return Circle(
     circleId: CircleId('$latitude$longitude'),
     center: LatLng(latitude, longitude),
@@ -70,8 +65,17 @@ Circle newCircle(BuildContext context, String date, String time,
     strokeColor: Colors.red,
     fillColor: Colors.black.withOpacity(getOpacityFromTime(time)),
     consumeTapEvents: true,
-    onTap: () =>
-        showDialog(context: context, child: CircleInfo(date: date, time: time)),
+    onTap: () => showDialog(context: context, child: CircleInfo(date: date, time: time)),
+  );
+}
+
+Polygon newPolygon(List coordinates, int cluster, bool isHotspot) {
+  return Polygon(
+    polygonId: PolygonId('$cluster'),
+    points: coordinates.map((coordinate) => LatLng(coordinate[0], coordinate[1])).toList(),
+    strokeWidth: 1,
+    strokeColor: Colors.black54,
+    fillColor: isHotspot ? Colors.red.withOpacity(0.2) : Colors.green.withOpacity(0.2),
   );
 }
 
@@ -88,8 +92,7 @@ double getOpacityFromTime(String time) {
 
 Duration getTimeDiffFromNow(hour, minute) {
   DateTime now = DateTime.now();
-  DateTime other =
-      DateTime(now.year, now.month, now.day, hour, minute, now.second);
+  DateTime other = DateTime(now.year, now.month, now.day, hour, minute, now.second);
   if (now.isAfter(other)) {
     Duration diff = now.difference(other);
     if (diff.inHours < 12) {
@@ -110,6 +113,5 @@ Duration getTimeDiffFromNow(hour, minute) {
 }
 
 void moveCameraTo(LatLng target, GoogleMapController controller) {
-  if (controller != null)
-    controller.animateCamera(CameraUpdate.newLatLng(target));
+  if (controller != null) controller.animateCamera(CameraUpdate.newLatLng(target));
 }

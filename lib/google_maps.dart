@@ -23,6 +23,7 @@ class _GoogleMapsState extends State<GoogleMaps> with TickerProviderStateMixin {
   double iconSize;
   double zoomLevel;
   Set<Circle> circles;
+  Set<Polygon> polygons;
   Color bgColor;
   LatLng coordinates;
   StreamSubscription<Position> positionStream;
@@ -35,6 +36,7 @@ class _GoogleMapsState extends State<GoogleMaps> with TickerProviderStateMixin {
     iconSize = 40;
     zoomLevel = 15;
     circles = Set<Circle>();
+    polygons = Set<Polygon>();
     bgColor = Colors.black54.withOpacity(0.5);
     coordinates = widget.coordinates;
     super.initState();
@@ -53,8 +55,7 @@ class _GoogleMapsState extends State<GoogleMaps> with TickerProviderStateMixin {
           alignment: Alignment.center,
           children: <Widget>[
             GoogleMap(
-              initialCameraPosition:
-                  CameraPosition(target: coordinates, zoom: zoomLevel),
+              initialCameraPosition: CameraPosition(target: coordinates, zoom: zoomLevel),
               onMapCreated: (controller) {
                 mapController = controller;
                 positionStream = startTracking(mapController);
@@ -68,14 +69,15 @@ class _GoogleMapsState extends State<GoogleMaps> with TickerProviderStateMixin {
               },
               onCameraMove: (position) => coordinates = position.target,
               onCameraIdle: () async {
-                isHotspot = await getInfo(context, coordinates, circles);
-                showSnackBar(context, coordinates, circles, isHotspot);
+                isHotspot = await getInfo(context, coordinates, circles, polygons);
                 setState(() {
+                  showSnackBar(context, coordinates, circles, isHotspot);
                   isLoading = false;
                   isTracking = false;
                 });
               },
               circles: circles,
+              polygons: polygons,
               zoomControlsEnabled: false,
               rotateGesturesEnabled: false,
               myLocationEnabled: true,

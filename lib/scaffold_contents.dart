@@ -18,9 +18,9 @@ AppBar showAppBar(BuildContext context, GoogleMapController controller) {
     backgroundColor: bgColor,
     actions: [
       IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () => showDialog(
-              context: context, child: SearchDialog(controller: controller))),
+        icon: Icon(Icons.search),
+        onPressed: () => showDialog(context: context, child: SearchDialog(controller: controller)),
+      ),
       IconButton(
         icon: Icon(Icons.help_outline),
         onPressed: () => showDialog(context: context, child: Instructions()),
@@ -29,34 +29,44 @@ AppBar showAppBar(BuildContext context, GoogleMapController controller) {
   );
 }
 
-Future<Map> getClusterData(LatLng location) async {
-  String endPoint = 'http://104.155.175.253/ml/api';
+Future<Map> getFeatureCollection(LatLng location) async {
   try {
-    String url =
-        '$endPoint?latitude=${location.latitude}&longitude=${location.longitude}';
-    http.Response response = await http.get(url);
+    var queryParams = {
+      'latitude': location.latitude.toString(),
+      'longitude': location.longitude.toString(),
+    };
+    var url = Uri.http('34.71.127.108', '/ml/api', queryParams);
+    var response = await http.get(url);
     return json.decode(response.body);
   } catch (e) {
     return Map();
   }
 }
 
-Future getInfo(
-    BuildContext context, LatLng coordinates, Set<Circle> circles) async {
-  Map data = await getClusterData(coordinates);
-  if (data.isNotEmpty) {
+Future getInfo(BuildContext context, LatLng coordinates, Set<Circle> circles, Set<Polygon> polygons) async {
+  Map collection = await getFeatureCollection(coordinates);
+  if (collection.isNotEmpty) {
     Set<Circle> newCircles = Set<Circle>();
-    for (var info in data['geo']) {
-      newCircles.add(newCircle(context, info[0], info[1], info[2], info[3]));
+    Set<Polygon> newPolygons = Set<Polygon>();
+    for (Map feature in collection['features']) {
+      if (feature['geometry']['type'] == 'Point') {
+        String date = feature['properties']['date'];
+        String time = feature['properties']['time'];
+        double latitude = feature['geometry']['coordinates'][0];
+        double longitude = feature['geometry']['coordinates'][1];
+        newCircles.add(newCircle(context, date, time, latitude, longitude));
+      } else if (feature['geometry']['type'] == 'LineString') {
+        newPolygons.add(newPolygon(feature['geometry']['coordinates'], feature['cluster'], feature['hotspot']));
+      }
     }
     circles.addAll(newCircles);
-    return data['hotspot'];
+    polygons.addAll(newPolygons);
+    return collection['hotspot'];
   }
   return null;
 }
 
-void showSnackBar(BuildContext context, LatLng coordinates, Set<Circle> circles,
-    isHotspot) async {
+void showSnackBar(BuildContext context, LatLng coordinates, Set<Circle> circles, isHotspot) async {
   Scaffold.of(context).hideCurrentSnackBar();
   bool isNear = await checkDistance(coordinates, circles);
   SnackBar newSnackBar = getSnackBar(isHotspot, isNear);

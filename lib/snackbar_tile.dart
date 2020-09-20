@@ -14,13 +14,11 @@ class SnackBarTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExpansionTile(
       leading: getTitleIcon(isHotspot, isNear),
-      title: Text(getTitle(isHotspot, isNear),
-          style: TextStyle(fontSize: largeFont, color: Colors.white)),
+      title: Text(getTitle(isHotspot, isNear), style: TextStyle(fontSize: largeFont, color: Colors.white)),
       children: [
         ListTile(
           leading: getHotspotIcon(isHotspot),
-          title: Text(getHotspotText(isHotspot),
-              style: TextStyle(fontSize: smallFont, color: Colors.white)),
+          title: Text(getHotspotText(isHotspot), style: TextStyle(fontSize: smallFont, color: Colors.white)),
         ),
         if (isHotspot != null)
           ListTile(
@@ -50,8 +48,7 @@ class SnackBarTile extends StatelessWidget {
 
   Icon getHotspotIcon(bool isHotspot) {
     if (isHotspot == null) {
-      return Icon(Icons.signal_cellular_off,
-          size: smallIcon, color: Colors.blue);
+      return Icon(Icons.signal_cellular_off, size: smallIcon, color: Colors.blue);
     } else if (isHotspot) {
       return Icon(Icons.trending_up, size: smallIcon, color: Colors.red);
     } else {
